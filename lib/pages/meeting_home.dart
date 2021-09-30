@@ -11,9 +11,8 @@ class MeetingHomePage extends StatefulWidget {
 }
 
 class _MeetingHomePageState extends State<MeetingHomePage> {
-
   int _selectedIndex = 0;
-  List<String> _appBarTitle = ['기본 정보', '회의 내용', '해야 할일'];
+  final List<String> _appBarTitle = ['기본 정보', '회의 내용', '해야 할일'];
 
   final List<Widget> _meetingPages = [
     MeetingMinutePage(),
@@ -28,33 +27,35 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
       drawer: meetingMinuteDrawer(),
       body: meetingMinuteBody(),
       bottomNavigationBar: meetingBottomNavi(),
-
     );
   }
 
   AppBar meetingMinutePageAppBar() {
     return AppBar(
-      iconTheme: IconThemeData(color: Color(0xff5D4037)),
+      iconTheme: const IconThemeData(color: Color(0xff5D4037)),
       actions: [
         IconButton(
-          icon: Icon(Icons.save),
-          onPressed: (){},
+          icon: const Icon(Icons.add),
+          onPressed: () {},
         ),
         IconButton(
-          icon: Icon(Icons.file_upload),
-          onPressed: (){},
+          icon: const Icon(Icons.link),
+          onPressed: () {},
         ),
         IconButton(
-          icon: Icon(Icons.link),
-          onPressed: (){},
+          icon: const Icon(Icons.file_upload),
+          onPressed: () {},
         ),
-
+        IconButton(
+          icon: const Icon(Icons.save),
+          onPressed: () {},
+        ),
       ],
       elevation: 0,
       backgroundColor: Colors.transparent,
       title: Text(
         _appBarTitle[_selectedIndex],
-        style: TextStyle(
+        style: const TextStyle(
             fontSize: 20,
             color: Color(0xff5D4037),
             fontWeight: FontWeight.bold),
@@ -67,7 +68,7 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
   Drawer meetingMinuteDrawer() {
     return Drawer(
       child: Container(
-        color: Color(0xff795548),
+        color: const Color(0xff795548),
       ),
     );
   }
@@ -79,9 +80,9 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
   BottomNavigationBar meetingBottomNavi() {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      backgroundColor: Color(0xff795548),
-      selectedItemColor: Color(0xffFFFFFF),
-      unselectedItemColor: Color(0xffD7CCC8).withOpacity(0.5),
+      backgroundColor: const Color(0xff795548),
+      selectedItemColor: const Color(0xffFFFFFF),
+      unselectedItemColor: const Color(0xffD7CCC8).withOpacity(0.5),
       selectedFontSize: 14,
       unselectedFontSize: 14,
       currentIndex: _selectedIndex,
@@ -90,7 +91,7 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
           _selectedIndex = index;
         });
       },
-      items: [
+      items: const [
         BottomNavigationBarItem(
           label: '기본 정보',
           icon: Icon(Icons.info),

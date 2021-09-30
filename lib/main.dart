@@ -18,18 +18,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      localizationsDelegates: [
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
-      supportedLocales: [
-        const Locale('ko', 'KR'),
-        const Locale('en', 'US'),
+      supportedLocales: const [
+        Locale('ko', 'KR'),
+        Locale('en', 'US'),
       ],
       debugShowCheckedModeBanner: false,
       initialBinding: InitialBinding(),
       theme: selectedTheme(0),
-      home: Home(),
+      home: const Home(),
     );
   }
 

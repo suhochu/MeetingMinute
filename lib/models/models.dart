@@ -13,7 +13,7 @@ List<String> agendaList = [
   '사이버 시큐리티 적용 검토',
 ];
 
-enum Status { ISSUED, PROCESSING, DELAYED, DONE, DEPRECATED }
+enum Status { issued, processing, delayed, done, deprecated }
 
 class AgendaModel {
   AgendaModel(
@@ -23,13 +23,13 @@ class AgendaModel {
       required this.todoModels});
 
   String agendaID = '';
-  String issuedDate = '${DateTime.now().toString().split(' ')[0]}';
+  String issuedDate = DateTime.now().toString().split(' ')[0];
   String agendaString;
   int contentCount = 0;
   int todoCount = 0;
   List<ContentsModel> contentsModels;
   List<TodoModel> todoModels;
-  Status agendaStatus = Status.ISSUED;
+  Status agendaStatus = Status.issued;
 
   String contentsCountReturn() {
     contentCount++;
@@ -61,5 +61,5 @@ class TodoModel {
   String todoString = '';
   String? dueDate = '';
   String? responsible = '';
-  Status todoStatus = Status.ISSUED;
+  Status todoStatus = Status.issued;
 }

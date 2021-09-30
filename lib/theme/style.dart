@@ -22,7 +22,7 @@ Widget smallTextStyle(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Text(
         context,
-        style: TextStyle(fontSize: 13, fontStyle: FontStyle.italic, color: color),
+        style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: color),
         textAlign: TextAlign.center,
       ),
     ),

@@ -10,11 +10,11 @@ Widget loginButton(Widget widget, VoidCallback onPressed) {
     width: 200,
     height: 50,
     child: ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(40)),
+      borderRadius: const BorderRadius.all(Radius.circular(40)),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           primary: selectedColors['ACCENT_COLOR'],
-              textStyle: TextStyle(
+              textStyle: const TextStyle(
             fontSize: 17, fontWeight: FontWeight.w500
         )
         ),
@@ -30,12 +30,12 @@ PopupMenuButton<String> customPopupMenuButton(
   var controller = Get.put<MeetingMinuteController>(MeetingMinuteController());
   return PopupMenuButton(
     padding: const EdgeInsets.only(top: 5.0),
-    icon: Icon(
+    icon: const Icon(
       Icons.arrow_drop_down,
       color: Color(0xff5D4037),
       size: 40,
     ),
-    offset: Offset(80, 40),
+    offset: const Offset(80, 40),
     onSelected: (String valueSelected) {
       textController.text = valueSelected;
       controller.formKey.currentState!.save();

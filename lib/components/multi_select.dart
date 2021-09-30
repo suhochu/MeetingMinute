@@ -11,7 +11,7 @@ class MultiSelectDialogItem {
 }
 
 class MultiSelectDialog extends StatefulWidget {
-  MultiSelectDialog({
+  const MultiSelectDialog({
     Key? key,
     this.title,
     this.items,
@@ -74,11 +74,11 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
       ),
       actions: [
         TextButton(
-          child: Text('CANCEL'),
+          child: const Text('CANCEL'),
           onPressed: _onCancelTap,
         ),
         TextButton(
-          child: Text('OK'),
+          child: const Text('OK'),
           onPressed: _onSubmitTap,
         ),
       ],
@@ -99,7 +99,7 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
 Future<Widget?> showMultiSelect(BuildContext ctx) async {
   var controller = Get.put<MeetingMinuteController>(MeetingMinuteController());
 
-  Set<int> dummySelectedValues = Set<int>();
+  Set<int> dummySelectedValues = <int>{};
 
   dummySelectedValues = await showDialog(
     context: ctx,

@@ -14,7 +14,7 @@ class LoginPage extends StatelessWidget {
     Map<String, Color> selectedColors = colorSetting[0];
 
     return Stack(children: [
-      Container(
+      SizedBox(
         width: double.infinity,
         child: Image.asset(
           'assets/images/login.png',
@@ -30,14 +30,14 @@ class LoginPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              loginButton(Text('로컬에서 로그인'), () {
-                Get.off(MeetingHomePage());
+              loginButton(const Text('로컬에서 로그인'), () {
+                Get.off(const MeetingHomePage());
               }),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
-              loginButton(Text('서버에서 로그인'), () {}),
-              SizedBox(
+              loginButton(const Text('서버에서 로그인'), () {}),
+              const SizedBox(
                 height: 10,
               ),
               GestureDetector(

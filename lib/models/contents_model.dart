@@ -27,9 +27,9 @@ class MeetingMinuteController extends GetxController {
   }
 
   String calIdWithMakingTime() {
-    return '${DateTime.now().toString().split(' ')[0].split('-')[0]}' +
-        '${DateTime.now().toString().split(' ')[0].split('-')[1]}' +
-        '${DateTime.now().toString().split(' ')[0].split('-')[2]}';
+    return DateTime.now().toString().split(' ')[0].split('-')[0] +
+        DateTime.now().toString().split(' ')[0].split('-')[1] +
+        DateTime.now().toString().split(' ')[0].split('-')[2];
   }
 
   void editingSelectedValues(Set<int> changedValues) {
