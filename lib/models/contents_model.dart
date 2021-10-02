@@ -12,18 +12,20 @@ class MeetingMinuteController extends GetxController {
   String meetings = '';
   RxList<AgendaModel> meetingContentsModel = <AgendaModel>[].obs;
   int agendaModelCount = 1;
+  RxString newAgendaStatus = status[0].obs;
+  RxString tempSelectedValues = ''.obs;
+
 
   final formKey = GlobalKey<FormState>();
-  var selectedValues = Set<int>().obs;
+  var selectedValues = <int>{}.obs;
 
   @override
   void onInit() {
     super.onInit();
     meetingMinuteId = calIdWithMakingTime();
-    print('meetingMinuteId is $meetingMinuteId');
-    addingAgenda('SW 변경 검토');
-    addingAgenda('HW 설계 검토');
-    addingAgenda('FMEA 계획 검토');
+    // addingAgenda('SW 변경 검토');
+    // addingAgenda('HW 설계 검토');
+    // addingAgenda('FMEA 계획 검토');
   }
 
   String calIdWithMakingTime() {
@@ -37,36 +39,42 @@ class MeetingMinuteController extends GetxController {
     selectedValues.addAll(changedValues);
   }
 
-  void addingAgenda(String agendaString) {
+  void addingAgenda(
+      String agendaString, String agendaStatus, String issuedTime) {
     meetingContentsModel.add(
       AgendaModel(
-        agendaID: meetingMinuteId + agendaModelCount.toString(),
-        agendaString: agendaString,
-        contentsModels: [],
-        todoModels: [],
-      ),
+          agendaID: meetingMinuteId + '-' + agendaModelCount.toString(),
+          agendaString: agendaString,
+          contentsModels: [],
+          todoModels: [],
+          agendaStatus: agendaStatus,
+          issuedTime: issuedTime),
     );
     agendaModelCount++;
   }
 
-  void editingAgenda(int number, String agendaTitle) {
-    AgendaModel dummyModel = meetingContentsModel[number];
-    dummyModel.agendaString = agendaTitle;
-    meetingContentsModel[number] = dummyModel;
+  void editingAgenda(
+      int number, String agendaTitle, String issuedTime, String agendaStatus) {
+    meetingContentsModel[number] = meetingContentsModel[number].copyWith(
+        agendaString: agendaTitle,
+        issuedTime: issuedTime,
+        agendaStatus: agendaStatus);
   }
 
   void removingAgenda(int number) {
     meetingContentsModel.removeAt(number);
   }
 
-  String agendaIdReturn(int number){
-    return  meetingMinuteId + meetingContentsModel[number].agendaID;
-  }
+  // String agendaIdReturn(int number) {
+  //   return meetingMinuteId + meetingContentsModel[number].agendaID;
+  // }
 
   void addingContents(int number, ContentsModel content) {
     AgendaModel dummyModel = meetingContentsModel[number];
     dummyModel.contentsModels.add(content);
-    meetingContentsModel[number] = dummyModel;
+    meetingContentsModel[number] = meetingContentsModel[number].copyWith(
+      contentsModels: dummyModel.contentsModels
+    );
   }
 
   void editingContent(int number, int index, ContentsModel content) {

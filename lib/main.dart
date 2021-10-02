@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:meetingminutes52/components/bindings.dart';
 import 'package:meetingminutes52/home.dart';
-import 'package:meetingminutes52/theme/style.dart';
+import 'package:meetingminutes52/theme/color_style.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 

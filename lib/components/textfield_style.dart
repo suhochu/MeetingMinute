@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-InputDecoration textFormFieldInputSytle(String hintText, Widget? widget) {
+InputDecoration textFormFieldInputStyle(String hintText, Widget? widget) {
   return InputDecoration(
+    isCollapsed: true,
     suffixIcon: widget,
     hintText: hintText,
     hintStyle: const TextStyle(fontSize: 16, color: Color(0xffD7CCC8)),
@@ -17,3 +18,4 @@ InputDecoration textFormFieldInputSytle(String hintText, Widget? widget) {
     ),
   );
 }
+

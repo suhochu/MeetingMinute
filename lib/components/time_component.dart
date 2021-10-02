@@ -6,7 +6,7 @@ Future<String> yearMonthDayTimePicker(BuildContext context) async {
 
   final DateTime? dateTime = await showDatePicker(
       context: context,
-      locale: Locale('ko', 'KR'),
+      locale: const Locale('ko', 'KR'),
       selectableDayPredicate: (DateTime day) {
         return day.isAfter(DateTime.now()) || DateTime.now().day == day.day;
       },
@@ -22,14 +22,13 @@ Future<String> yearMonthDayTimePicker(BuildContext context) async {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.dark().copyWith(
-            colorScheme: ColorScheme.dark(
+            colorScheme: const ColorScheme.dark(
               primary: Color(0xffFF5722),
               onPrimary: Color(0xffD7CCC8),
               surface: Color(0xFF182233),
               onSurface: Color(0xffFFFFFF),
             ),
-            dialogBackgroundColor: Color(0xFF182233),
-
+            dialogBackgroundColor: const Color(0xFF182233),
           ),
           child: child!,
         );
@@ -40,18 +39,18 @@ Future<String> yearMonthDayTimePicker(BuildContext context) async {
         helpText: '회의 시간를 입력하세요',
         confirmText: '예약',
         cancelText: '취소',
-        initialTime: TimeOfDay(hour: 0, minute: 0),
+        initialTime: const TimeOfDay(hour: 0, minute: 0),
         builder: (BuildContext context, Widget? child) {
           return Theme(
             data: ThemeData.light().copyWith(
-              colorScheme: ColorScheme.dark(
+              colorScheme: const ColorScheme.dark(
                 primary: Color(0xffFF5722),
                 onPrimary: Color(0xffD7CCC8),
                 surface: Color(0xFF182233),
                 onSurface: Color(0xffFFFFFF),
               ),
-              dialogBackgroundColor: Color(0xFF182233),
-              timePickerTheme: TimePickerThemeData(
+              dialogBackgroundColor: const Color(0xFF182233),
+              timePickerTheme: const TimePickerThemeData(
                 hourMinuteColor: Color(0xFF182233),
                 helpTextStyle:
                     TextStyle(color: Color(0xffFFFFFF), fontSize: 11),
@@ -83,3 +82,18 @@ Future<String> yearMonthDayTimePicker(BuildContext context) async {
   }
   return '';
 }
+
+String currentTime(bool selection) {
+  if (selection) {
+    return '${DateTime.now().toString().split(' ')[0].split('-')[0]}년 '
+        '${DateTime.now().toString().split(' ')[0].split('-')[1]}월 '
+        '${DateTime.now().toString().split(' ')[0].split('-')[2]}일 '
+        '${DateTime.now().toString().split(' ')[1].split(':')[0]}시 ${DateTime
+        .now().toString().split(' ')[1].split(':')[1]}분';
+  } else {
+    return DateTime.now().toString().split(' ')[0].split('-')[0] + '-' +
+        DateTime.now().toString().split(' ')[0].split('-')[1] + '-' +
+        DateTime.now().toString().split(' ')[0].split('-')[2] + ' ';
+  }
+}
+

@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:meetingminutes52/components/buttons.dart';
 import 'package:meetingminutes52/components/multi_select.dart';
 import 'package:meetingminutes52/components/textfield_style.dart';
-import 'package:meetingminutes52/components/timePicker.dart';
+import 'package:meetingminutes52/components/time_component.dart';
 import 'package:meetingminutes52/models/contents_model.dart';
 import 'package:meetingminutes52/models/models.dart' as model;
 
@@ -63,7 +63,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
         controller: meetingSelectCtrl,
         textDirection: TextDirection.ltr,
         textAlign: TextAlign.center,
-        decoration: textFormFieldInputSytle('회의 제목', null),
+        decoration: textFormFieldInputStyle('회의 제목', null),
         style: const TextStyle(color: Color(0xff5D4037)),
         onChanged: (val) {
           controller.meetingTitle = val;
@@ -82,7 +82,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
         child: TextFormField(
           controller: meetingDateCtrl,
           textAlign: TextAlign.center,
-          decoration: textFormFieldInputSytle(
+          decoration: textFormFieldInputStyle(
               '회의 시간',
               const Icon(
                 Icons.date_range,
@@ -99,7 +99,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
     return TextFormField(
       controller: meetingPlaceCtrl,
       textAlign: TextAlign.center,
-      decoration: textFormFieldInputSytle(
+      decoration: textFormFieldInputStyle(
         '회의 장소',
         customPopupMenuButton(meetingPlaceCtrl, model.meetingPlace),
       ),
@@ -185,7 +185,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
         child: TextFormField(
           controller: meetingModeratorCtrl,
           textAlign: TextAlign.center,
-          decoration: textFormFieldInputSytle(
+          decoration: textFormFieldInputStyle(
             '회의 주관자',
             const Icon(
               Icons.arrow_drop_down,
@@ -224,7 +224,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
     return TextFormField(
       controller: meetingTitleCtrl,
       textAlign: TextAlign.center,
-      decoration: textFormFieldInputSytle(
+      decoration: textFormFieldInputStyle(
         '회의 종류',
         customPopupMenuButton(meetingTitleCtrl, model.meetings),
       ),

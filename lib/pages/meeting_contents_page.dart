@@ -1,10 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:meetingminutes52/components/buttons.dart';
+import 'package:meetingminutes52/components/custom_card.dart';
 import 'package:meetingminutes52/components/textfield_style.dart';
+import 'package:meetingminutes52/components/time_component.dart';
 import 'package:meetingminutes52/models/contents_model.dart';
-import 'package:meetingminutes52/models/models.dart';
-import 'package:meetingminutes52/theme/style.dart';
+import 'package:meetingminutes52/models/models.dart' as model;
+import 'package:meetingminutes52/theme/color_style.dart';
+import 'package:meetingminutes52/theme/text_style.dart';
 
 class MeetingContentsPage extends GetView<MeetingMinuteController> {
   final TextEditingController _agendaController = TextEditingController();
@@ -34,7 +38,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   Padding _newAgendaAddingButtonWidget() {
     return Padding(
       padding: const EdgeInsets.only(top: 10),
-      child: _agendaCardWidget(
+      child: agendaCardWidget(
         widget: const Padding(
           padding: EdgeInsets.all(5.0),
           child: Text(
@@ -48,20 +52,6 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
           ),
         ),
         color: const Color(0xff795548),
-      ),
-    );
-  }
-
-  Widget _agendaCardWidget({required Widget widget, required Color color}) {
-    return Card(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5.0),
-          side: const BorderSide(color: Color(0xff795548))),
-      elevation: 1,
-      margin: const EdgeInsets.all(2),
-      color: color,
-      child: Center(
-        child: widget,
       ),
     );
   }
@@ -86,9 +76,10 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   ExpansionTile _agendaExpansion(int index) {
+    var agenda = controller.meetingContentsModel[index];
     return ExpansionTile(
       childrenPadding: const EdgeInsets.symmetric(vertical: 5),
-      title: _agendaCardWidget(
+      title: agendaCardWidget(
         widget: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -96,10 +87,9 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
             children: [
               const SizedBox(height: 4),
               GestureDetector(
-                child: Text(
-                    '${index + 1}. ${controller.meetingContentsModel[index].agendaString}',
-                    style:
-                        const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+                child: Text('${index + 1}. ${agenda.agendaString}',
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w400)),
                 onTap: () => _editingAgendaMethod(index), // Editing Contents
                 onLongPress: () async {
                   bool? deleteParameter = await _removeAgendaMethod(index);
@@ -111,23 +101,24 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  smallTextStyle(
-                    context: 'Initiated',
-                    color: Colors.red,
+                  smallTextStyleInsideAgenda(
+                    context: agenda.agendaStatus,
+                    color: selectColor(agenda.agendaStatus),
                   ),
-                  smallTextStyle(
-                    context: DateTime.now().toString().split(' ')[0],
+                  smallTextStyleInsideAgenda(
+                    context: agenda.issuedTime,
+                    color: const Color(0xff212121),
                   ),
-                  smallTextStyle(
+                  smallTextStyleInsideAgenda(
                     context: '컨텐츠',
-                    color: Colors.green,
+                    color: Colors.blue,
                     onTap: () {
                       _addingContentsMethod(index);
                     },
                   ),
-                  smallTextStyle(
+                  smallTextStyleInsideAgenda(
                     context: 'Todo',
-                    color: Colors.blueAccent,
+                    color: const Color(0xffFF5722),
                     onTap: () {
                       _addingTodosMethod(index);
                     },
@@ -163,47 +154,70 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
 
   void _addingAgendaMethod(int index) {
     _agendaController.clear();
+    String agendaId = controller.meetingMinuteId +
+        '-' +
+        controller.agendaModelCount.toString();
+
     Get.bottomSheet(
       SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const Text(
-                '아젠다 추가',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextField(
-                controller: _agendaController,
-                textDirection: TextDirection.ltr,
-                textAlign: TextAlign.center,
-                decoration: textFormFieldInputSytle(
-                    '아젠다 #${index + 1} 를 입력하세요', null),
-                style: const TextStyle(color: Color(0xff5D4037)),
-                maxLines: 2,
-                maxLength: 40,
-              ),
-              const SizedBox(
-                height: 20,
+              Text('아젠다 추가',
+                  textAlign: TextAlign.center,
+                  style: bottomSheetTitleTextStyle()),
+              const SizedBox(height: 20),
+              RichText(
+                  text: TextSpan(children: [
+                TextSpan(text: 'ID : ', style: bottomSheetSubTitleTextStyle()),
+                TextSpan(text: agendaId, style: bottomSheetContentsTextStyle())
+              ])),
+              const SizedBox(height: 15),
+              RichText(
+                  text: TextSpan(children: [
+                TextSpan(
+                    text: 'ISSUED TIME : ',
+                    style: bottomSheetSubTitleTextStyle()),
+                TextSpan(
+                    text: currentTime(true),
+                    style: bottomSheetContentsTextStyle())
+              ])),
+              BottomSheetStatusWidget(index: -1),
+              Text('Agenda : ', style: bottomSheetSubTitleTextStyle()),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 15.0),
+                child: TextField(
+                  controller: _agendaController,
+                  textDirection: TextDirection.ltr,
+                  textAlign: TextAlign.center,
+                  decoration: textFormFieldInputStyle(
+                      '아젠다 #${index + 1} 를 입력하세요', null),
+                  style: const TextStyle(color: Color(0xff5D4037)),
+                  maxLines: 2,
+                  maxLength: 40,
+                ),
               ),
               ElevatedButton(
                 child: const Text('완료'),
                 style: ElevatedButton.styleFrom(
                     primary: const Color(0xffFF5722),
                     minimumSize: const Size(70, 35),
-                    textStyle:
-                        const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+                    textStyle: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w400)),
                 onPressed: () {
-                  controller.addingAgenda(_agendaController.text);
+                  if (_agendaController.text != '') {
+                    controller.addingAgenda(
+                        _agendaController.text,
+                        controller.newAgendaStatus.toString(),
+                        currentTime(false));
+                  }
                   _agendaController.clear();
-                  print(_agendaController.text);
                   Get.back();
                 },
               ),
+              const SizedBox(height: 18),
             ],
           ),
         ),
@@ -222,57 +236,86 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   void _editingAgendaMethod(int index) {
-    _agendaController.text =
-        controller.meetingContentsModel[index].agendaString;
+    var agenda = controller.meetingContentsModel[index];
+    _agendaController.text = agenda.agendaString;
     Get.bottomSheet(
       SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const Text(
+              Text(
                 '아젠다 수정',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                style: bottomSheetTitleTextStyle(),
               ),
-              const SizedBox(
-                height: 10,
+              const SizedBox(height: 20),
+              RichText(
+                  text: TextSpan(children: [
+                TextSpan(text: 'ID : ', style: bottomSheetSubTitleTextStyle()),
+                TextSpan(
+                    text: agenda.agendaID,
+                    style: bottomSheetContentsTextStyle())
+              ])),
+              const SizedBox(height: 15),
+              RichText(
+                  text: TextSpan(children: [
+                TextSpan(
+                    text: 'ISSUED TIME : ',
+                    style: bottomSheetSubTitleTextStyle()),
+                TextSpan(
+                    text: agenda.issuedTime,
+                    style: bottomSheetContentsTextStyle())
+              ])),
+              BottomSheetStatusWidget(
+                index: index,
               ),
-              TextField(
-                controller: _agendaController,
-                textDirection: TextDirection.ltr,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  hintStyle:
-                      const TextStyle(fontSize: 16, color: Color(0xffD7CCC8)),
-                  fillColor: const Color(0xffD7CCC8).withOpacity(0.1),
-                  filled: true,
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: const Color(0xff795548).withOpacity(0.3),
+              Text('Agenda : ', style: bottomSheetSubTitleTextStyle()),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 15.0),
+                child: TextField(
+                  controller: _agendaController,
+                  textDirection: TextDirection.ltr,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    hintStyle:
+                        const TextStyle(fontSize: 16, color: Color(0xffD7CCC8)),
+                    fillColor: const Color(0xffD7CCC8).withOpacity(0.1),
+                    filled: true,
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: const Color(0xff795548).withOpacity(0.3),
+                      ),
+                    ),
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Color(0xff5D4037), width: 2),
                     ),
                   ),
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Color(0xff5D4037), width: 2),
-                  ),
+                  style: const TextStyle(color: Color(0xff5D4037)),
+                  maxLines: 2,
+                  maxLength: 40,
                 ),
-                style: const TextStyle(color: Color(0xff5D4037)),
-                maxLines: 2,
-                maxLength: 40,
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               ElevatedButton(
                 child: const Text('완료'),
                 style: ElevatedButton.styleFrom(
                     primary: const Color(0xffFF5722),
                     minimumSize: const Size(70, 35),
-                    textStyle:
-                        const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+                    textStyle: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w400)),
                 onPressed: () {
-                  controller.editingAgenda(index, _agendaController.text);
+                  if (_agendaController.text != agenda.agendaString ||
+                      controller.newAgendaStatus.toString() !=
+                          agenda.agendaStatus) {
+                    controller.editingAgenda(
+                        index,
+                        _agendaController.text,
+                        currentTime(false),
+                        controller.newAgendaStatus.toString());
+                  }
                   _agendaController.clear();
                   Get.back();
                 },
@@ -342,8 +385,8 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                     CircleAvatar(
                       child: Text(
                         '${index + 1}',
-                        style:
-                            const TextStyle(color: Color(0xffFFFFFF), fontSize: 14),
+                        style: const TextStyle(
+                            color: Color(0xffFFFFFF), fontSize: 14),
                       ),
                       backgroundColor: Colors.green,
                       radius: 10.0,
@@ -352,7 +395,8 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                       width: 5,
                     ),
                     Text(
-                      controller.meetingContentsModel[number].contentsModels[index].contentsString,
+                      controller.meetingContentsModel[number]
+                          .contentsModels[index].contentsString,
                       textAlign: TextAlign.left,
                       style: const TextStyle(fontSize: 16),
                     ),
@@ -374,28 +418,52 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
 
   void _addingContentsMethod(int number) {
     _contentsController.clear();
+    var agenda = controller.meetingContentsModel[number];
+    String contentsId = agenda.agendaID + '-' + 'CT' + agenda.contentCount.toString();
+
     Get.bottomSheet(
       SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const Text(
+              Text(
                 '컨텐츠 추가',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                style: bottomSheetTitleTextStyle(),
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextField(
-                controller: _contentsController,
-                textDirection: TextDirection.ltr,
-                textAlign: TextAlign.center,
-                decoration: textFormFieldInputSytle('새로운 컨텐츠를 입력하세요', null),
-                style: const TextStyle(color: Color(0xff5D4037)),
-                maxLines: 2,
-                maxLength: 100,
+              const SizedBox(height: 20),
+              RichText(
+                  text: TextSpan(children: [
+                    TextSpan(text: 'ID : ', style: bottomSheetSubTitleTextStyle()),
+                    TextSpan(text: contentsId, style: bottomSheetContentsTextStyle())
+                  ])),
+              const SizedBox(height: 15),
+              RichText(
+                  text: TextSpan(children: [
+                    TextSpan(
+                        text: 'ISSUED TIME : ',
+                        style: bottomSheetSubTitleTextStyle()),
+                    TextSpan(
+                        text: currentTime(true),
+                        style: bottomSheetContentsTextStyle())
+                  ])),
+              const SizedBox(height: 15),
+              BottomSheetIssuedByWidget(number: -1, index: -1,),
+              const SizedBox(height: 15),
+              Text('Agenda : ', style: bottomSheetSubTitleTextStyle()),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 15.0),
+                child: TextField(
+                  controller: _contentsController,
+                  textDirection: TextDirection.ltr,
+                  textAlign: TextAlign.center,
+                  decoration: textFormFieldInputStyle('새로운 컨텐츠를 입력하세요', null),
+                  style: const TextStyle(color: Color(0xff5D4037)),
+                  maxLines: 2,
+                  maxLength: 100,
+                ),
               ),
               const SizedBox(
                 height: 20,
@@ -405,15 +473,17 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                 style: ElevatedButton.styleFrom(
                     primary: const Color(0xffFF5722),
                     minimumSize: const Size(70, 35),
-                    textStyle:
-                        const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+                    textStyle: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w400)),
                 onPressed: () {
-                  ContentsModel content = ContentsModel(
-                      contentsID:
-                          controller.meetingContentsModel[number].agendaID +
-                              controller.meetingContentsModel[number]
-                                  .contentsCountReturn(),
-                      contentsString: _contentsController.text);
+                  model.ContentsModel content = model.ContentsModel(
+                      contentsID: contentsId,
+                          // controller.meetingContentsModel[number].agendaID +
+                          //     controller.meetingContentsModel[number]
+                          //         .contentsCountReturn(),
+                      contentsString: _contentsController.text,
+                      issuedBy: controller.tempSelectedValues.toString(),
+                      issuedDate: currentTime(false));
                   controller.addingContents(number, content);
                   _contentsController.clear();
                   Get.back();
@@ -439,6 +509,9 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   void _editingContentsMethod(int number, int index) {
     _contentsController.text = controller
         .meetingContentsModel[number].contentsModels[index].contentsString;
+    print(controller.meetingContentsModel[number].contentsModels[index].contentsID);
+    print(controller.meetingContentsModel[number].contentsModels[index].issuedBy);
+    print(controller.meetingContentsModel[number].contentsModels[index].issuedDate);
     Get.bottomSheet(
       SingleChildScrollView(
         child: Padding(
@@ -468,8 +541,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                     ),
                   ),
                   focusedBorder: const UnderlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Color(0xff5D4037), width: 2),
+                    borderSide: BorderSide(color: Color(0xff5D4037), width: 2),
                   ),
                 ),
                 style: const TextStyle(color: Color(0xff5D4037)),
@@ -484,14 +556,14 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                 style: ElevatedButton.styleFrom(
                     primary: const Color(0xffFF5722),
                     minimumSize: const Size(70, 35),
-                    textStyle:
-                        const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+                    textStyle: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w400)),
                 onPressed: () {
-                  ContentsModel content = ContentsModel(
-                      contentsID: controller.meetingContentsModel[number]
-                          .contentsModels[index].contentsString,
-                      contentsString: _contentsController.text);
-                  controller.editingContent(number, index, content);
+                  // model.ContentsModel content = model.ContentsModel(
+                  //     contentsID: controller.meetingContentsModel[number]
+                  //         .contentsModels[index].contentsString,
+                  //     contentsString: _contentsController.text);
+                  // controller.editingContent(number, index, content);
                   _contentsController.clear();
                   Get.back();
                 },
@@ -561,8 +633,8 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                     CircleAvatar(
                       child: Text(
                         '${index + 1}',
-                        style:
-                            const TextStyle(color: Color(0xffFFFFFF), fontSize: 14),
+                        style: const TextStyle(
+                            color: Color(0xffFFFFFF), fontSize: 14),
                       ),
                       backgroundColor: Colors.blue,
                       radius: 10.0,
@@ -571,7 +643,8 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                       width: 5,
                     ),
                     Text(
-                      controller.meetingContentsModel[number].todoModels[index].todoString,
+                      controller.meetingContentsModel[number].todoModels[index]
+                          .todoString,
                       textAlign: TextAlign.left,
                       style: const TextStyle(fontSize: 16),
                     ),
@@ -611,7 +684,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                 controller: _todoController,
                 textDirection: TextDirection.ltr,
                 textAlign: TextAlign.center,
-                decoration: textFormFieldInputSytle('신규 Todo 를 입력하세요', null),
+                decoration: textFormFieldInputStyle('신규 Todo 를 입력하세요', null),
                 style: const TextStyle(color: Color(0xff5D4037)),
                 maxLines: 2,
                 maxLength: 40,
@@ -624,14 +697,13 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                 style: ElevatedButton.styleFrom(
                     primary: const Color(0xffFF5722),
                     minimumSize: const Size(70, 35),
-                    textStyle:
-                        const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+                    textStyle: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w400)),
                 onPressed: () {
-                  TodoModel todo = TodoModel(
-                      todoID:
-                          controller.meetingContentsModel[number].agendaID +
-                              controller.meetingContentsModel[number]
-                                  .todoCountReturn(),
+                  model.TodoModel todo = model.TodoModel(
+                      todoID: controller.meetingContentsModel[number].agendaID +
+                          controller.meetingContentsModel[number]
+                              .todoCountReturn(),
                       todoString: _todoController.text);
                   controller.addingTodo(number, todo);
                   _todoController.clear();
@@ -705,15 +777,14 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                   style: ElevatedButton.styleFrom(
                       primary: const Color(0xffFF5722),
                       minimumSize: const Size(70, 35),
-                      textStyle:
-                          const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+                      textStyle: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.w400)),
                   onPressed: () {
-                    TodoModel todo = TodoModel(
+                    model.TodoModel todo = model.TodoModel(
                         todoID: controller.meetingContentsModel[number]
                             .todoModels[index].todoID,
                         todoString: _todoController.text);
-                    controller.editingTodos(
-                        number, index, todo);
+                    controller.editingTodos(number, index, todo);
                     _todoController.clear();
                     Get.back();
                   },

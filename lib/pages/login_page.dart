@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:meetingminutes52/components/buttons.dart';
-import 'package:meetingminutes52/theme/style.dart';
+import 'package:meetingminutes52/theme/color_style.dart';
 import 'package:meetingminutes52/pages/meeting_home.dart';
 
 class LoginPage extends StatelessWidget {
@@ -25,7 +25,7 @@ class LoginPage extends StatelessWidget {
       ),
       Positioned(
         bottom: 50,
-        child: Container(
+        child: SizedBox(
           width: appWidth,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
