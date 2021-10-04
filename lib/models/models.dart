@@ -36,16 +36,11 @@ class AgendaModel {
   String agendaID = '';
   String issuedTime = '';
   String agendaString = '';
-  int contentCount = 0;
-  int todoCount = 0;
+  int contentCount = 1;
+  int todoCount = 1;
   List<ContentsModel> contentsModels;
   List<TodoModel> todoModels;
   String agendaStatus = '';
-
-  // String contentsCountReturn() {
-  //   contentCount++;
-  //   return contentCount.toString();
-  // }
 
   String todoCountReturn() {
     todoCount++;
@@ -86,15 +81,19 @@ class ContentsModel {
 }
 
 class TodoModel {
-  TodoModel({required this.todoID, required this.todoString});
+  TodoModel({
+    required this.todoID,
+    required this.todoString,
+    required this.issuedTime,
+    required this.dueDate,
+    required this.responsible,
+    required this.todoStatus,
+  });
 
   String todoID = '';
   String todoString = '';
+  String issuedTime = '';
   String dueDate = '';
   String responsible = '';
   String todoStatus = '';
 }
-
-
-
-

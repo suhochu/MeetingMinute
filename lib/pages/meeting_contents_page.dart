@@ -26,7 +26,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
             width: Get.size.width * 0.95,
             child: Obx(() {
               return Column(
-                children: _agendaListBuilder(),
+                children: _agendaListBuilder(context),
               );
             }),
           ),
@@ -56,7 +56,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
     );
   }
 
-  List<Widget> _agendaListBuilder() {
+  List<Widget> _agendaListBuilder(BuildContext ctx) {
     List<Widget> cardList = [];
     cardList = List.generate(
       controller.meetingContentsModel.length + 1,
@@ -67,7 +67,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
             onTap: () => _addingAgendaMethod(index), //Adding Contents
           );
         } else {
-          return _agendaExpansion(index);
+          return _agendaExpansion(ctx, index);
         }
       },
     );
@@ -75,7 +75,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
     return cardList;
   }
 
-  ExpansionTile _agendaExpansion(int index) {
+  ExpansionTile _agendaExpansion(BuildContext ctx, int index) {
     var agenda = controller.meetingContentsModel[index];
     return ExpansionTile(
       childrenPadding: const EdgeInsets.symmetric(vertical: 5),
@@ -88,8 +88,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
               const SizedBox(height: 4),
               GestureDetector(
                 child: Text('${index + 1}. ${agenda.agendaString}',
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w400)),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
                 onTap: () => _editingAgendaMethod(index), // Editing Contents
                 onLongPress: () async {
                   bool? deleteParameter = await _removeAgendaMethod(index);
@@ -120,7 +119,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                     context: 'Todo',
                     color: const Color(0xffFF5722),
                     onTap: () {
-                      _addingTodosMethod(index);
+                      _addingTodosMethod(ctx, index);
                     },
                   ),
                 ],
@@ -142,7 +141,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
         ]),
         Column(
           children: [
-            ..._todoExpansions(index),
+            ..._todoExpansions(ctx, index),
             const SizedBox(
               height: 10,
             ),
@@ -154,9 +153,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
 
   void _addingAgendaMethod(int index) {
     _agendaController.clear();
-    String agendaId = controller.meetingMinuteId +
-        '-' +
-        controller.agendaModelCount.toString();
+    String agendaId = controller.meetingMinuteId + '-' + controller.agendaModelCount.toString();
 
     Get.bottomSheet(
       SingleChildScrollView(
@@ -164,9 +161,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Text('아젠다 추가',
-                  textAlign: TextAlign.center,
-                  style: bottomSheetTitleTextStyle()),
+              Text('아젠다 추가', textAlign: TextAlign.center, style: bottomSheetTitleTextStyle()),
               const SizedBox(height: 20),
               RichText(
                   text: TextSpan(children: [
@@ -176,42 +171,22 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
               const SizedBox(height: 15),
               RichText(
                   text: TextSpan(children: [
-                TextSpan(
-                    text: 'ISSUED TIME : ',
-                    style: bottomSheetSubTitleTextStyle()),
-                TextSpan(
-                    text: currentTime(true),
-                    style: bottomSheetContentsTextStyle())
+                TextSpan(text: 'ISSUED TIME : ', style: bottomSheetSubTitleTextStyle()),
+                TextSpan(text: currentTime(true), style: bottomSheetContentsTextStyle())
               ])),
-              BottomSheetStatusWidget(index: -1),
+              BottomSheetAgendaStatusWidget(number: -1),
               Text('Agenda : ', style: bottomSheetSubTitleTextStyle()),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 15.0),
-                child: TextField(
-                  controller: _agendaController,
-                  textDirection: TextDirection.ltr,
-                  textAlign: TextAlign.center,
-                  decoration: textFormFieldInputStyle(
-                      '아젠다 #${index + 1} 를 입력하세요', null),
-                  style: const TextStyle(color: Color(0xff5D4037)),
-                  maxLines: 2,
-                  maxLength: 40,
-                ),
-              ),
+              contentsTextField(_agendaController, '아젠다 #${index + 1} 를 입력하세요', null),
               ElevatedButton(
                 child: const Text('완료'),
                 style: ElevatedButton.styleFrom(
                     primary: const Color(0xffFF5722),
                     minimumSize: const Size(70, 35),
-                    textStyle: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w400)),
+                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
                 onPressed: () {
                   if (_agendaController.text != '') {
                     controller.addingAgenda(
-                        _agendaController.text,
-                        controller.newAgendaStatus.toString(),
-                        currentTime(false));
+                        _agendaController.text, controller.tempAgendaStatus.toString(), currentTime(false));
                   }
                   _agendaController.clear();
                   Get.back();
@@ -253,34 +228,24 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
               RichText(
                   text: TextSpan(children: [
                 TextSpan(text: 'ID : ', style: bottomSheetSubTitleTextStyle()),
-                TextSpan(
-                    text: agenda.agendaID,
-                    style: bottomSheetContentsTextStyle())
+                TextSpan(text: agenda.agendaID, style: bottomSheetContentsTextStyle())
               ])),
               const SizedBox(height: 15),
               RichText(
                   text: TextSpan(children: [
-                TextSpan(
-                    text: 'ISSUED TIME : ',
-                    style: bottomSheetSubTitleTextStyle()),
-                TextSpan(
-                    text: agenda.issuedTime,
-                    style: bottomSheetContentsTextStyle())
+                TextSpan(text: 'ISSUED TIME : ', style: bottomSheetSubTitleTextStyle()),
+                TextSpan(text: agenda.issuedTime, style: bottomSheetContentsTextStyle())
               ])),
-              BottomSheetStatusWidget(
-                index: index,
-              ),
+              BottomSheetAgendaStatusWidget(number: index),
               Text('Agenda : ', style: bottomSheetSubTitleTextStyle()),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 15.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.0),
                 child: TextField(
                   controller: _agendaController,
                   textDirection: TextDirection.ltr,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
-                    hintStyle:
-                        const TextStyle(fontSize: 16, color: Color(0xffD7CCC8)),
+                    hintStyle: const TextStyle(fontSize: 16, color: Color(0xffD7CCC8)),
                     fillColor: const Color(0xffD7CCC8).withOpacity(0.1),
                     filled: true,
                     enabledBorder: UnderlineInputBorder(
@@ -289,8 +254,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                       ),
                     ),
                     focusedBorder: const UnderlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Color(0xff5D4037), width: 2),
+                      borderSide: BorderSide(color: Color(0xff5D4037), width: 2),
                     ),
                   ),
                   style: const TextStyle(color: Color(0xff5D4037)),
@@ -304,17 +268,12 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                 style: ElevatedButton.styleFrom(
                     primary: const Color(0xffFF5722),
                     minimumSize: const Size(70, 35),
-                    textStyle: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w400)),
+                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
                 onPressed: () {
                   if (_agendaController.text != agenda.agendaString ||
-                      controller.newAgendaStatus.toString() !=
-                          agenda.agendaStatus) {
+                      controller.tempAgendaStatus.toString() != agenda.agendaStatus) {
                     controller.editingAgenda(
-                        index,
-                        _agendaController.text,
-                        currentTime(false),
-                        controller.newAgendaStatus.toString());
+                        index, _agendaController.text, currentTime(false), controller.tempAgendaStatus.toString());
                   }
                   _agendaController.clear();
                   Get.back();
@@ -341,8 +300,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
     return await Get.defaultDialog<bool>(
       title: '아젠다 지움 확인',
       titleStyle: const TextStyle(fontWeight: FontWeight.bold),
-      middleText:
-          '"${controller.meetingContentsModel[index].agendaString}"를 삭제 합니까?',
+      middleText: '"${controller.meetingContentsModel[index].agendaString}"를 삭제 합니까?',
       backgroundColor: const Color(0xff795548),
       textCancel: '아니오',
       textConfirm: '예',
@@ -358,8 +316,8 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   List<Widget> _contentsExpansions(int number) {
-    List<Widget> contentsList = List.generate(
-        controller.meetingContentsModel[number].contentsModels.length, (index) {
+    var contents = controller.meetingContentsModel[number].contentsModels;
+    List<Widget> contentsList = List.generate(contents.length, (index) {
       return GestureDetector(
           onTap: () {
             _editingContentsMethod(number, index);
@@ -371,7 +329,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
             }
           },
           child: Container(
-            color: Colors.green.withOpacity(0.1),
+            color: Colors.blue.withOpacity(0.1),
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -385,20 +343,38 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                     CircleAvatar(
                       child: Text(
                         '${index + 1}',
-                        style: const TextStyle(
-                            color: Color(0xffFFFFFF), fontSize: 14),
+                        style: const TextStyle(color: Color(0xffFFFFFF), fontSize: 14),
                       ),
-                      backgroundColor: Colors.green,
+                      backgroundColor: Colors.blue,
                       radius: 10.0,
                     ),
                     const SizedBox(
-                      width: 5,
+                      width: 10,
                     ),
-                    Text(
-                      controller.meetingContentsModel[number]
-                          .contentsModels[index].contentsString,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(fontSize: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          contents[index].contentsString,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            Text(
+                              contents[index].issuedDate,
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(fontSize: 10, fontStyle: FontStyle.italic),
+                            ),
+                            Text(
+                              'issued by ${contents[index].issuedBy}',
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(fontSize: 10, fontStyle: FontStyle.italic),
+                            ),
+                          ],
+                        )
+                      ],
                     ),
                   ],
                 ),
@@ -407,7 +383,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                 ),
                 Container(
                   height: 1,
-                  color: Colors.green,
+                  color: Colors.blue,
                 ),
               ],
             ),
@@ -426,68 +402,57 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '컨텐츠 추가',
-                textAlign: TextAlign.center,
-                style: bottomSheetTitleTextStyle(),
+              Container(
+                alignment: Alignment.center,
+                child: Text(
+                  '컨텐츠 추가',
+                  style: bottomSheetTitleTextStyle(),
+                ),
               ),
               const SizedBox(height: 20),
               RichText(
                   text: TextSpan(children: [
-                    TextSpan(text: 'ID : ', style: bottomSheetSubTitleTextStyle()),
-                    TextSpan(text: contentsId, style: bottomSheetContentsTextStyle())
-                  ])),
+                TextSpan(text: 'ID : ', style: bottomSheetSubTitleTextStyle()),
+                TextSpan(text: contentsId, style: bottomSheetContentsTextStyle())
+              ])),
               const SizedBox(height: 15),
               RichText(
                   text: TextSpan(children: [
-                    TextSpan(
-                        text: 'ISSUED TIME : ',
-                        style: bottomSheetSubTitleTextStyle()),
-                    TextSpan(
-                        text: currentTime(true),
-                        style: bottomSheetContentsTextStyle())
-                  ])),
-              const SizedBox(height: 15),
-              BottomSheetIssuedByWidget(number: -1, index: -1,),
-              const SizedBox(height: 15),
-              Text('Agenda : ', style: bottomSheetSubTitleTextStyle()),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 15.0),
-                child: TextField(
-                  controller: _contentsController,
-                  textDirection: TextDirection.ltr,
-                  textAlign: TextAlign.center,
-                  decoration: textFormFieldInputStyle('새로운 컨텐츠를 입력하세요', null),
-                  style: const TextStyle(color: Color(0xff5D4037)),
-                  maxLines: 2,
-                  maxLength: 100,
-                ),
+                TextSpan(text: 'ISSUED TIME : ', style: bottomSheetSubTitleTextStyle()),
+                TextSpan(text: currentTime(true), style: bottomSheetContentsTextStyle())
+              ])),
+              BottomSheetContentsIssuedByWidget(
+                number: -1,
+                index: -1,
               ),
+              Text('Agenda : ', style: bottomSheetSubTitleTextStyle()),
+              contentsTextField(_contentsController, '새로운 컨텐츠를 입력하세요', null),
               const SizedBox(
                 height: 20,
               ),
-              ElevatedButton(
-                child: const Text('완료'),
-                style: ElevatedButton.styleFrom(
-                    primary: const Color(0xffFF5722),
-                    minimumSize: const Size(70, 35),
-                    textStyle: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w400)),
-                onPressed: () {
-                  model.ContentsModel content = model.ContentsModel(
-                      contentsID: contentsId,
-                          // controller.meetingContentsModel[number].agendaID +
-                          //     controller.meetingContentsModel[number]
-                          //         .contentsCountReturn(),
-                      contentsString: _contentsController.text,
-                      issuedBy: controller.tempSelectedValues.toString(),
-                      issuedDate: currentTime(false));
-                  controller.addingContents(number, content);
-                  _contentsController.clear();
-                  Get.back();
-                },
+              Container(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  child: const Text('완료'),
+                  style: ElevatedButton.styleFrom(
+                      primary: const Color(0xffFF5722),
+                      minimumSize: const Size(70, 35),
+                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+                  onPressed: () {
+                    if (_contentsController.text != '') {
+                      model.ContentsModel content = model.ContentsModel(
+                          contentsID: contentsId,
+                          contentsString: _contentsController.text,
+                          issuedBy: controller.tempContentsIssuedBy.toString(),
+                          issuedDate: currentTime(false));
+                      controller.addingContents(number, content);
+                      _contentsController.clear();
+                    }
+                    Get.back();
+                  },
+                ),
               ),
             ],
           ),
@@ -507,66 +472,65 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   void _editingContentsMethod(int number, int index) {
-    _contentsController.text = controller
-        .meetingContentsModel[number].contentsModels[index].contentsString;
-    print(controller.meetingContentsModel[number].contentsModels[index].contentsID);
-    print(controller.meetingContentsModel[number].contentsModels[index].issuedBy);
-    print(controller.meetingContentsModel[number].contentsModels[index].issuedDate);
+    _contentsController.text = controller.meetingContentsModel[number].contentsModels[index].contentsString;
+    var editingContent = controller.meetingContentsModel[number].contentsModels[index];
+
     Get.bottomSheet(
       SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 '컨텐츠 수정',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                style: bottomSheetTitleTextStyle(),
               ),
-              const SizedBox(
-                height: 10,
+              const SizedBox(height: 20),
+              RichText(
+                  text: TextSpan(children: [
+                TextSpan(text: 'ID : ', style: bottomSheetSubTitleTextStyle()),
+                TextSpan(text: editingContent.contentsID, style: bottomSheetContentsTextStyle())
+              ])),
+              const SizedBox(height: 15),
+              RichText(
+                  text: TextSpan(children: [
+                TextSpan(text: 'ISSUED TIME : ', style: bottomSheetSubTitleTextStyle()),
+                TextSpan(text: editingContent.issuedDate, style: bottomSheetContentsTextStyle())
+              ])),
+              BottomSheetContentsIssuedByWidget(
+                number: number,
+                index: index,
               ),
-              TextField(
-                controller: _contentsController,
-                textDirection: TextDirection.ltr,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  hintStyle:
-                      const TextStyle(fontSize: 16, color: Color(0xffD7CCC8)),
-                  fillColor: const Color(0xffD7CCC8).withOpacity(0.1),
-                  filled: true,
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: const Color(0xff795548).withOpacity(0.3),
-                    ),
-                  ),
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xff5D4037), width: 2),
-                  ),
-                ),
-                style: const TextStyle(color: Color(0xff5D4037)),
-                maxLines: 2,
-                maxLength: 40,
-              ),
+              Text('Agenda : ', style: bottomSheetSubTitleTextStyle()),
+              contentsTextField(_contentsController, '컨텐츠를 입력하세요', null),
               const SizedBox(
                 height: 20,
               ),
-              ElevatedButton(
-                child: const Text('완료'),
-                style: ElevatedButton.styleFrom(
-                    primary: const Color(0xffFF5722),
-                    minimumSize: const Size(70, 35),
-                    textStyle: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w400)),
-                onPressed: () {
-                  // model.ContentsModel content = model.ContentsModel(
-                  //     contentsID: controller.meetingContentsModel[number]
-                  //         .contentsModels[index].contentsString,
-                  //     contentsString: _contentsController.text);
-                  // controller.editingContent(number, index, content);
-                  _contentsController.clear();
-                  Get.back();
-                },
+              Container(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  child: const Text('완료'),
+                  style: ElevatedButton.styleFrom(
+                      primary: const Color(0xffFF5722),
+                      minimumSize: const Size(70, 35),
+                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+                  onPressed: () {
+                    if (_contentsController.text != '' ||
+                        controller.tempContentsIssuedBy.toString() != editingContent.issuedBy) {
+                      model.ContentsModel content = model.ContentsModel(
+                        contentsID: editingContent.contentsID,
+                        contentsString: _contentsController.text,
+                        issuedDate: currentTime(false),
+                        issuedBy: controller.tempContentsIssuedBy.toString(),
+                      );
+                      controller.editingContent(number, index, content);
+                    }
+                    _contentsController.clear();
+                    Get.back();
+                  },
+                ),
               ),
             ],
           ),
@@ -586,11 +550,11 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   Future<bool?> _removeContentsMethod(int number, int index) async {
+    var contents = controller.meetingContentsModel[number].contentsModels[index];
     return await Get.defaultDialog<bool>(
       title: '컨텐츠 지움 확인',
       titleStyle: const TextStyle(fontWeight: FontWeight.bold),
-      middleText:
-          '"${controller.meetingContentsModel[number].contentsModels[index]}"를 삭제 합니까?',
+      middleText: '"${contents.contentsString}"를 삭제 합니까?',
       backgroundColor: const Color(0xff795548),
       textCancel: '아니오',
       textConfirm: '예',
@@ -605,12 +569,12 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
     );
   }
 
-  List<Widget> _todoExpansions(int number) {
-    List<Widget> todoList = List.generate(
-        controller.meetingContentsModel[number].todoModels.length, (index) {
+  List<Widget> _todoExpansions(BuildContext ctx, int number) {
+    var todos = controller.meetingContentsModel[number].todoModels;
+    List<Widget> todoList = List.generate(todos.length, (index) {
       return GestureDetector(
           onTap: () {
-            _editingTodosMethod(number, index);
+            _editingTodosMethod(ctx, number, index);
           },
           onLongPress: () async {
             bool? deleteParameter = await _removingTodosMethod(number, index);
@@ -619,7 +583,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
             }
           },
           child: Container(
-            color: Colors.blue.withOpacity(0.1),
+            color: const Color(0xffFF5722).withOpacity(0.1),
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -628,26 +592,33 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                   height: 6,
                 ),
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
                       child: Text(
                         '${index + 1}',
-                        style: const TextStyle(
-                            color: Color(0xffFFFFFF), fontSize: 14),
+                        style: const TextStyle(color: Color(0xffFFFFFF), fontSize: 14),
                       ),
-                      backgroundColor: Colors.blue,
+                      backgroundColor: const Color(0xffFF5722).withOpacity(0.7),
                       radius: 10.0,
                     ),
-                    const SizedBox(
-                      width: 5,
-                    ),
+                const SizedBox(
+                  width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      controller.meetingContentsModel[number].todoModels[index]
-                          .todoString,
+                      controller.meetingContentsModel[number].todoModels[index].todoString,
                       textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 16),
                     ),
+                    Text(
+                      'Responsible : ${todos[index].responsible},  Due-Date : ${todos[index].dueDate}',
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(fontSize: 10, fontStyle: FontStyle.italic),
+                    ),
+                  ],
+                ),
                   ],
                 ),
                 const SizedBox(
@@ -655,60 +626,85 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                 ),
                 Container(
                   height: 1,
-                  color: Colors.blue,
+                  color: const Color(0xffFF5722).withOpacity(0.7),
                 ),
-              ],
-            ),
-          ));
+
+
+          ])));
     });
     return todoList;
   }
 
-  void _addingTodosMethod(int number) {
+  void _addingTodosMethod(BuildContext ctx, int number) {
     _todoController.clear();
+    controller.tempTodoDueData.value = '';
+    var todos = controller.meetingContentsModel[number];
+    String todoId = todos.agendaID + '-' + 'TD' + todos.todoCount.toString();
+
     Get.bottomSheet(
       SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Todo 추가',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              Container(
+                alignment: Alignment.center,
+                child: Text(
+                  'Todo 추가',
+                  style: bottomSheetTitleTextStyle(),
+                ),
               ),
-              const SizedBox(
-                height: 10,
+              const SizedBox(height: 20),
+              RichText(
+                  text: TextSpan(children: [
+                TextSpan(text: 'ID : ', style: bottomSheetSubTitleTextStyle()),
+                TextSpan(text: todoId, style: bottomSheetContentsTextStyle())
+              ])),
+              const SizedBox(height: 15),
+              RichText(
+                  text: TextSpan(children: [
+                TextSpan(text: 'ISSUED TIME : ', style: bottomSheetSubTitleTextStyle()),
+                TextSpan(text: currentTime(true), style: bottomSheetContentsTextStyle())
+              ])),
+              BottomSheetTodoResponsibleWidget(
+                number: -1,
+                index: -1,
               ),
-              TextField(
-                controller: _todoController,
-                textDirection: TextDirection.ltr,
-                textAlign: TextAlign.center,
-                decoration: textFormFieldInputStyle('신규 Todo 를 입력하세요', null),
-                style: const TextStyle(color: Color(0xff5D4037)),
-                maxLines: 2,
-                maxLength: 40,
+              dueDateTimeWidget(ctx),
+              BottomSheetTodoEditingWidget(
+                number: -1,
+                index: -1,
               ),
+              Text('Todo : ', style: bottomSheetSubTitleTextStyle()),
+              contentsTextField(_todoController, '신규 Todo 를 입력하세요', null),
               const SizedBox(
                 height: 20,
               ),
-              ElevatedButton(
-                child: const Text('완료'),
-                style: ElevatedButton.styleFrom(
-                    primary: const Color(0xffFF5722),
-                    minimumSize: const Size(70, 35),
-                    textStyle: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w400)),
-                onPressed: () {
-                  model.TodoModel todo = model.TodoModel(
-                      todoID: controller.meetingContentsModel[number].agendaID +
-                          controller.meetingContentsModel[number]
-                              .todoCountReturn(),
-                      todoString: _todoController.text);
-                  controller.addingTodo(number, todo);
-                  _todoController.clear();
-                  Get.back();
-                },
+              Container(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  child: const Text('완료'),
+                  style: ElevatedButton.styleFrom(
+                      primary: const Color(0xffFF5722),
+                      minimumSize: const Size(70, 35),
+                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+                  onPressed: () {
+                    if (_todoController.text != '') {
+                      model.TodoModel todo = model.TodoModel(
+                        todoID: todoId,
+                        todoString: _todoController.text,
+                        issuedTime: currentTime(false),
+                        responsible: controller.tempTodoResponsible.toString(),
+                        dueDate: controller.tempTodoDueData.toString(),
+                        todoStatus: controller.tempTodoStatus.toString(),
+                      );
+                      controller.addingTodo(number, todo);
+                      _todoController.clear();
+                    }
+                    Get.back();
+                  },
+                ),
               ),
             ],
           ),
@@ -727,67 +723,70 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
     );
   }
 
-  void _editingTodosMethod(int number, int index) {
-    _todoController.text =
-        controller.meetingContentsModel[number].todoModels[index].todoString;
+  void _editingTodosMethod(BuildContext ctx, int number, int index) {
+    _todoController.text = controller.meetingContentsModel[number].todoModels[index].todoString;
+    var todos = controller.meetingContentsModel[number].todoModels[index];
+
     Get.bottomSheet(
       SingleChildScrollView(
         child: SizedBox(
-          height: Get.size.height * 0.3,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Todo 수정',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                TextField(
-                  controller: _todoController,
-                  textDirection: TextDirection.ltr,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                    hintStyle:
-                        const TextStyle(fontSize: 16, color: Color(0xffD7CCC8)),
-                    fillColor: const Color(0xffD7CCC8).withOpacity(0.1),
-                    filled: true,
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: const Color(0xff795548).withOpacity(0.3),
-                      ),
-                    ),
-                    focusedBorder: const UnderlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Color(0xff5D4037), width: 2),
-                    ),
+                Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Todo 수정',
+                    style: bottomSheetTitleTextStyle(),
                   ),
-                  style: const TextStyle(color: Color(0xff5D4037)),
-                  maxLines: 2,
-                  maxLength: 40,
                 ),
-                const SizedBox(
-                  height: 20,
+                const SizedBox(height: 20),
+                RichText(
+                    text: TextSpan(children: [
+                  TextSpan(text: 'ID : ', style: bottomSheetSubTitleTextStyle()),
+                  TextSpan(text: todos.todoID, style: bottomSheetContentsTextStyle())
+                ])),
+                const SizedBox(height: 15),
+                RichText(
+                    text: TextSpan(children: [
+                  TextSpan(text: 'ISSUED TIME : ', style: bottomSheetSubTitleTextStyle()),
+                  TextSpan(text: todos.issuedTime, style: bottomSheetContentsTextStyle())
+                ])),
+                BottomSheetTodoResponsibleWidget(
+                  number: number,
+                  index: index,
                 ),
-                ElevatedButton(
-                  child: const Text('완료'),
-                  style: ElevatedButton.styleFrom(
-                      primary: const Color(0xffFF5722),
-                      minimumSize: const Size(70, 35),
-                      textStyle: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w400)),
-                  onPressed: () {
-                    model.TodoModel todo = model.TodoModel(
-                        todoID: controller.meetingContentsModel[number]
-                            .todoModels[index].todoID,
-                        todoString: _todoController.text);
-                    controller.editingTodos(number, index, todo);
-                    _todoController.clear();
-                    Get.back();
-                  },
+                dueDateTimeWidget(ctx),
+                BottomSheetTodoEditingWidget(
+                  number: number,
+                  index: index,
+                ),
+                Text('Todo : ', style: bottomSheetSubTitleTextStyle()),
+                contentsTextField(_todoController, 'Todo 를 입력하세요', null),
+                const SizedBox(height: 20),
+                Container(
+                  alignment: Alignment.center,
+                  child: ElevatedButton(
+                    child: const Text('완료'),
+                    style: ElevatedButton.styleFrom(
+                        primary: const Color(0xffFF5722),
+                        minimumSize: const Size(70, 35),
+                        textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+                    onPressed: () {
+                      model.TodoModel todo = model.TodoModel(
+                          todoID: todos.todoID,
+                          issuedTime: currentTime(false),
+                          responsible: controller.tempTodoResponsible.toString(),
+                          dueDate: controller.tempTodoDueData.toString(),
+                          todoStatus: controller.tempTodoStatus.toString(),
+                          todoString: _todoController.text);
+                      controller.editingTodos(number, index, todo);
+                      _todoController.clear();
+                      Get.back();
+                    },
+                  ),
                 ),
               ],
             ),
@@ -811,8 +810,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
     return await Get.defaultDialog<bool>(
       title: 'Todo 지움 확인',
       titleStyle: const TextStyle(fontWeight: FontWeight.bold),
-      middleText:
-          '"${controller.meetingContentsModel[number].todoModels[index]}"를 삭제 합니까?',
+      middleText: '"${controller.meetingContentsModel[number].todoModels[index].todoString}"를 삭제 합니까?',
       backgroundColor: const Color(0xff795548),
       textCancel: '아니오',
       textConfirm: '예',
@@ -825,5 +823,28 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
         Get.back(result: true);
       },
     );
+  }
+
+  Widget dueDateTimeWidget(BuildContext ctx) {
+    return Row(children: [
+      Obx(
+        () => RichText(
+          text: TextSpan(children: [
+            TextSpan(text: 'Due Date : ', style: bottomSheetSubTitleTextStyle()),
+            TextSpan(text: controller.tempTodoDueData.toString(), style: bottomSheetContentsTextStyle())
+          ]),
+        ),
+      ),
+      GestureDetector(
+        onTap: () async {
+          controller.tempTodoDueData.value = await yearMonthDayTimePicker(ctx);
+        },
+        child: const Icon(
+          Icons.date_range,
+          color: Color(0xff5D4037),
+          size: 30,
+        ),
+      ),
+    ]);
   }
 }

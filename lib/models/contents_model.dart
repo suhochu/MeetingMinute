@@ -12,8 +12,11 @@ class MeetingMinuteController extends GetxController {
   String meetings = '';
   RxList<AgendaModel> meetingContentsModel = <AgendaModel>[].obs;
   int agendaModelCount = 1;
-  RxString newAgendaStatus = status[0].obs;
-  RxString tempSelectedValues = ''.obs;
+  RxString tempAgendaStatus = status[0].obs;
+  RxString tempContentsIssuedBy = ''.obs;
+  RxString tempTodoStatus = status[0].obs;
+  RxString tempTodoResponsible = ''.obs;
+  RxString tempTodoDueData = ''.obs;
 
 
   final formKey = GlobalKey<FormState>();
@@ -65,16 +68,13 @@ class MeetingMinuteController extends GetxController {
     meetingContentsModel.removeAt(number);
   }
 
-  // String agendaIdReturn(int number) {
-  //   return meetingMinuteId + meetingContentsModel[number].agendaID;
-  // }
-
   void addingContents(int number, ContentsModel content) {
     AgendaModel dummyModel = meetingContentsModel[number];
     dummyModel.contentsModels.add(content);
     meetingContentsModel[number] = meetingContentsModel[number].copyWith(
       contentsModels: dummyModel.contentsModels
     );
+    meetingContentsModel[number].contentCount++;
   }
 
   void editingContent(int number, int index, ContentsModel content) {
@@ -86,13 +86,16 @@ class MeetingMinuteController extends GetxController {
   void removingContents(int number, int index) {
     AgendaModel dummyModel = meetingContentsModel[number];
     dummyModel.contentsModels.removeAt(index);
-    meetingContentsModel[index] = dummyModel;
+    meetingContentsModel[number] = dummyModel;
   }
 
   void addingTodo(int number, TodoModel todo) {
     AgendaModel dummyModel = meetingContentsModel[number];
     dummyModel.todoModels.add(todo);
-    meetingContentsModel[number] = dummyModel;
+    meetingContentsModel[number] = meetingContentsModel[number].copyWith(
+      todoModels: dummyModel.todoModels,
+    );
+    meetingContentsModel[number].todoCount++;
   }
 
   void editingTodos(int number, int index, TodoModel todo) {
@@ -104,6 +107,6 @@ class MeetingMinuteController extends GetxController {
   void removingTodos(int number, int index) {
     AgendaModel dummyModel = meetingContentsModel[number];
     dummyModel.todoModels.removeAt(index);
-    meetingContentsModel[index] = dummyModel;
+    meetingContentsModel[number] = dummyModel;
   }
 }
