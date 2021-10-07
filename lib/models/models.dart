@@ -2,20 +2,8 @@ import 'package:flutter/material.dart';
 
 List<String> peoples = ['추수호', '이기동', '전준영', '주환엽', '조성환'];
 List<String> meetings = ['아키텍처 디자인 리뷰', '프로젝트 회의', '브레인스토밍', '평가 결과 검토'];
-List<String> meetingPlace = [
-  '모비스온 화상회의',
-  '팀즈 화상회의',
-  '의장동 401회의실',
-  '의장동 402회의실'
-];
-List<String> status = [
-  'Initiated',
-  'Processing',
-  'Delayed',
-  'Done',
-  'Deprecated'
-];
-
+List<String> meetingPlace = ['모비스온 화상회의', '팀즈 화상회의', '의장동 401회의실', '의장동 402회의실'];
+List<String> status = ['Initiated', 'Processing', 'Delayed', 'Done', 'Deprecated'];
 
 // List<String> agendaList = [
 //   'SW 변경 검토',
@@ -23,6 +11,29 @@ List<String> status = [
 //   'FMEA 계획 검토',
 //   '사이버 시큐리티 적용 검토',
 // ];
+
+class MeetingMinute {
+  String meetingMinuteId;
+
+  MeetingMinute({
+    required this.meetingMinuteId,
+    required this.meetingTitle,
+    required this.meetingTime,
+    required this.meetingPlace,
+    required this.meetingAttendants,
+    required this.meetingModerator,
+    required this.meetings,
+    required this.meetingContentsMode,
+  });
+
+  String meetingTitle;
+  String meetingTime;
+  String meetingPlace;
+  String meetingAttendants;
+  String meetingModerator;
+  String meetings;
+  List<AgendaModel> meetingContentsMode = [];
+}
 
 class AgendaModel {
   AgendaModel(
@@ -88,6 +99,7 @@ class TodoModel {
     required this.dueDate,
     required this.responsible,
     required this.todoStatus,
+    required this.intDueDate,
   });
 
   String todoID = '';
@@ -96,4 +108,5 @@ class TodoModel {
   String dueDate = '';
   String responsible = '';
   String todoStatus = '';
+  int intDueDate = 0;
 }

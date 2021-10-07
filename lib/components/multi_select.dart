@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:meetingminutes52/models/contents_model.dart';
+import 'package:meetingminutes52/models/meeting_minute_controller.dart';
 import 'package:meetingminutes52/models/models.dart' as model;
 
 class MultiSelectDialogItem {

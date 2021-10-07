@@ -4,7 +4,7 @@ import 'package:meetingminutes52/components/buttons.dart';
 import 'package:meetingminutes52/components/multi_select.dart';
 import 'package:meetingminutes52/components/textfield_style.dart';
 import 'package:meetingminutes52/components/time_component.dart';
-import 'package:meetingminutes52/models/contents_model.dart';
+import 'package:meetingminutes52/models/meeting_minute_controller.dart';
 import 'package:meetingminutes52/models/models.dart' as model;
 
 class MeetingMinutePage extends GetView<MeetingMinuteController> {

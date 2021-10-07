@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:meetingminutes52/models/contents_model.dart';
+import 'package:meetingminutes52/components/custom_card.dart';
+import 'package:meetingminutes52/models/meeting_minute_controller.dart';
 import 'package:meetingminutes52/models/models.dart' as model;
 import 'package:meetingminutes52/theme/color_style.dart';
 import 'package:meetingminutes52/theme/text_style.dart';
@@ -245,5 +246,37 @@ class BottomSheetTodoEditingWidget extends GetView<MeetingMinuteController> {
   }
 }
 
+Widget completeButton(VoidCallback onPressed){
+  return Container(
+    alignment: Alignment.center,
+    child: ElevatedButton(
+      child: const Text('완료'),
+      style: ElevatedButton.styleFrom(
+          primary: const Color(0xffFF5722),
+          minimumSize: const Size(70, 35),
+          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+      onPressed: onPressed,
+    ),
+  );
+}
 
-
+Padding AddingButtonWidget(String text) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 10),
+    child: agendaCardWidget(
+      widget: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xffFFFFFF),
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      ),
+      color: const Color(0xff795548),
+    ),
+  );
+}

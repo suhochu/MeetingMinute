@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meetingminutes52/pages/drawer_page.dart';
 import 'package:meetingminutes52/pages/meeting_contents_page.dart';
 import 'package:meetingminutes52/pages/meeting_minute_page.dart';
 import 'package:meetingminutes52/pages/meeting_todo_page.dart';
@@ -17,7 +18,7 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
   final List<Widget> _meetingPages = [
     MeetingMinutePage(),
     MeetingContentsPage(),
-    MeetingTodoPage()
+    // MeetingTodoPage()
   ];
 
   @override
@@ -55,10 +56,7 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
       backgroundColor: Colors.transparent,
       title: Text(
         _appBarTitle[_selectedIndex],
-        style: const TextStyle(
-            fontSize: 20,
-            color: Color(0xff5D4037),
-            fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 20, color: Color(0xff5D4037), fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
       ),
       // centerTitle: true,
@@ -67,9 +65,7 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
 
   Drawer meetingMinuteDrawer() {
     return Drawer(
-      child: Container(
-        color: const Color(0xff795548),
-      ),
+      child: DrawerPage(),
     );
   }
 
@@ -100,10 +96,11 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
           label: '회의 내용',
           icon: Icon(Icons.question_answer),
         ),
-        BottomNavigationBarItem(
-          label: '해야 할일',
-          icon: Icon(Icons.engineering),
-        ),
+
+        // BottomNavigationBarItem(
+        //   label: '해야 할일',
+        //   icon: Icon(Icons.engineering),
+        // ),
       ],
     );
   }

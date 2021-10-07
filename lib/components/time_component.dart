@@ -39,7 +39,7 @@ Future<String> yearMonthDayTimePicker(BuildContext context) async {
         helpText: '회의 시간를 입력하세요',
         confirmText: '예약',
         cancelText: '취소',
-        initialTime: const TimeOfDay(hour: 0, minute: 0),
+        initialTime: const TimeOfDay(hour: 12, minute: 0),
         builder: (BuildContext context, Widget? child) {
           return Theme(
             data: ThemeData.light().copyWith(
@@ -52,8 +52,7 @@ Future<String> yearMonthDayTimePicker(BuildContext context) async {
               dialogBackgroundColor: const Color(0xFF182233),
               timePickerTheme: const TimePickerThemeData(
                 hourMinuteColor: Color(0xFF182233),
-                helpTextStyle:
-                    TextStyle(color: Color(0xffFFFFFF), fontSize: 11),
+                helpTextStyle: TextStyle(color: Color(0xffFFFFFF), fontSize: 11),
                 dayPeriodColor: Color(0xFF182233),
               ),
             ),
@@ -74,10 +73,10 @@ Future<String> yearMonthDayTimePicker(BuildContext context) async {
         min = pickedTime.minute.toString();
       }
 
-      return '${dateTime.toString().split(' ')[0].split('-')[0]}년 '
-          '${dateTime.toString().split(' ')[0].split('-')[1]}월 '
-          '${dateTime.toString().split(' ')[0].split('-')[2]}일 '
-          '$hour시 $min분';
+      return dateTime.toString().split(' ')[0].split('-')[0] + '-' +
+          dateTime.toString().split(' ')[0].split('-')[1] + '-' +
+          dateTime.toString().split(' ')[0].split('-')[2] + '  ' +
+          hour + ':' + min;
     }
   }
   return '';
@@ -88,12 +87,26 @@ String currentTime(bool selection) {
     return '${DateTime.now().toString().split(' ')[0].split('-')[0]}년 '
         '${DateTime.now().toString().split(' ')[0].split('-')[1]}월 '
         '${DateTime.now().toString().split(' ')[0].split('-')[2]}일 '
-        '${DateTime.now().toString().split(' ')[1].split(':')[0]}시 ${DateTime
-        .now().toString().split(' ')[1].split(':')[1]}분';
+        '${DateTime.now().toString().split(' ')[1].split(':')[0]}시 ${DateTime.now().toString().split(' ')[1].split(':')[1]}분';
   } else {
-    return DateTime.now().toString().split(' ')[0].split('-')[0] + '-' +
-        DateTime.now().toString().split(' ')[0].split('-')[1] + '-' +
-        DateTime.now().toString().split(' ')[0].split('-')[2] + ' ';
+    return DateTime.now().toString().split(' ')[0].split('-')[0] +
+        '-' +
+        DateTime.now().toString().split(' ')[0].split('-')[1] +
+        '-' +
+        DateTime.now().toString().split(' ')[0].split('-')[2] +
+        '  ' +
+        DateTime.now().toString().split(' ')[1].split(':')[0] +
+        ':' +
+        DateTime.now().toString().split(' ')[1].split(':')[1];
   }
 }
 
+int dueDateStringToInt(String value) {
+  if(value == '') return 0;
+  String date = value.split('  ')[0].split('-')[0] +
+      value.split('  ')[0].split('-')[1] +
+      value.split('  ')[0].split('-')[2] +
+      value.split('  ')[1].split(':')[0] +
+      value.split('  ')[1].split(':')[1];
+  return int.parse(date);
+}
