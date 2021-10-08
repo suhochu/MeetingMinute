@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 Widget smallTextStyleInsideAgenda(
-    {required String context, Color? color, GestureTapCallback? onTap}) {
+    {required String context, Color? color, GestureTapCallback? onTap, double? paddingValue}) {
   return Expanded(
     child: InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: EdgeInsets.symmetric(vertical: paddingValue ?? 8.0),
         child: Text(
           context,
           style: TextStyle(

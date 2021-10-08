@@ -153,7 +153,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
               ])),
               BottomSheetAgendaStatusWidget(number: -1),
               Text('Agenda : ', style: bottomSheetSubTitleTextStyle()),
-              contentsTextField(_agendaController, '아젠다 #${index + 1} 를 입력하세요', null),
+              bottomSheetTextField(_agendaController, '아젠다 #${index + 1} 를 입력하세요', null, 2, 100),
               completeButton(
                 () {
                   if (_agendaController.text != '') {
@@ -388,7 +388,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                 index: -1,
               ),
               Text('Content : ', style: bottomSheetSubTitleTextStyle()),
-              contentsTextField(_contentsController, '새로운 컨텐츠를 입력하세요', null),
+              bottomSheetTextField(_contentsController, '새로운 컨텐츠를 입력하세요', null, 2, 100),
               const SizedBox(height: 20),
               completeButton(
                 () {
@@ -458,7 +458,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                 index: index,
               ),
               Text('Content : ', style: bottomSheetSubTitleTextStyle()),
-              contentsTextField(_contentsController, '컨텐츠를 입력하세요', null),
+              bottomSheetTextField(_contentsController, '컨텐츠를 입력하세요', null, 2, 100),
               const SizedBox(
                 height: 20,
               ),
@@ -627,7 +627,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                 index: -1,
               ),
               Text('Todo : ', style: bottomSheetSubTitleTextStyle()),
-              contentsTextField(_todoController, '신규 Todo 를 입력하세요', null),
+              bottomSheetTextField(_todoController, '신규 Todo 를 입력하세요', null, 2, 100),
               const SizedBox(height: 20),
               completeButton(
                 () {
@@ -711,7 +711,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                   index: index,
                 ),
                 Text('Todo : ', style: bottomSheetSubTitleTextStyle()),
-                contentsTextField(_todoController, 'Todo 를 입력하세요', null),
+                bottomSheetTextField(_todoController, 'Todo 를 입력하세요', null, 2, 100),
                 const SizedBox(height: 20),
                 completeButton(() {
                   //수정에 대한 조건문 작성 필요

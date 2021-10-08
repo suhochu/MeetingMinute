@@ -1,8 +1,21 @@
 class ProjectModel {
-  ProjectModel(this.projectName);
+  ProjectModel({required this.projectName, required this.teamName});
 
   String projectName;
-  List<String> peoples = [];
+  String teamName;
+  List<People> peoples = [];
   List<String> meetings = [];
   List<String> meetingPlace = [];
+}
+
+class People {
+  People({
+    required this.name,
+    required this.email,
+    required this.organization,
+  });
+
+  String name;
+  String email;
+  String organization;
 }
