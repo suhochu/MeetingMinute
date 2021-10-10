@@ -4,7 +4,7 @@ class ProjectModel {
   String projectName;
   String teamName;
   List<People> peoples = [];
-  List<String> meetings = [];
+  List<Meetings> meetings = [];
   List<String> meetingPlace = [];
 }
 
@@ -12,10 +12,20 @@ class People {
   People({
     required this.name,
     required this.email,
-    required this.organization,
+    required this.team,
   });
 
   String name;
   String email;
-  String organization;
+  String team;
+}
+
+class Meetings {
+  Meetings({
+    required this.meetingName,
+    required this.meetingTiming,
+  });
+
+  String meetingName;
+  String meetingTiming;
 }

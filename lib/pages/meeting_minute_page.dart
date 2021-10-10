@@ -5,10 +5,13 @@ import 'package:meetingminutes52/components/multi_select.dart';
 import 'package:meetingminutes52/components/textfield_style.dart';
 import 'package:meetingminutes52/components/time_component.dart';
 import 'package:meetingminutes52/models/meeting_minute_controller.dart';
+import 'package:meetingminutes52/models/meeting_resource_controller.dart';
 import 'package:meetingminutes52/models/models.dart' as model;
 
 class MeetingMinutePage extends GetView<MeetingMinuteController> {
+  final projectController = Get.put(MeetingSourceController());
 
+  final TextEditingController projectTeamCtrl = TextEditingController();
   final TextEditingController meetingTitleCtrl = TextEditingController();
   final TextEditingController meetingDateCtrl = TextEditingController();
   final TextEditingController meetingPlaceCtrl = TextEditingController();
@@ -39,6 +42,9 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       key: controller.formKey,
       child: Column(
         children: [
+          SizedBox(height: defaultDividerSize),
+          projectTeamWidget(),
+          SizedBox(height: defaultDividerSize * 0.3),
           meetingTitleWidget(),
           SizedBox(height: defaultDividerSize),
           meetingTimeWidget(ctx),
@@ -53,6 +59,28 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
           SizedBox(height: defaultDividerSize),
         ],
       ),
+    );
+  }
+
+  Widget projectTeamWidget() {
+    List<String> projects = [];
+    for (var project in projectController.projects) {
+      projects.add(project.projectName);
+    }
+    return TextFormField(
+      controller: projectTeamCtrl,
+      textAlign: TextAlign.center,
+      decoration: textFormFieldInputStyle(
+        '프로젝트',
+        customPopupMenuButton(projectTeamCtrl, projects, projectSelect: 1),
+      ),
+      style: const TextStyle(color: Color(0xff5D4037)),
+      onSaved: (value) {
+        controller.projectName = value ?? '';
+      },
+      onChanged: (value) {
+        controller.projectName = value;
+      },
     );
   }
 
@@ -101,7 +129,12 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       textAlign: TextAlign.center,
       decoration: textFormFieldInputStyle(
         '회의 장소',
-        customPopupMenuButton(meetingPlaceCtrl, model.meetingPlace),
+        customPopupMenuButton(
+          meetingPlaceCtrl,
+          controller.selectedProject.value == -1
+              ? []
+              : projectController.projects[controller.selectedProject.value].meetingPlace,
+        ),
       ),
       style: const TextStyle(color: Color(0xff5D4037)),
       onSaved: (value) {
@@ -123,8 +156,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
               padding: const EdgeInsets.only(left: 10),
               child: Text(
                 '회의 참석자',
-                style: TextStyle(
-                    color: const Color(0xff5D4037).withOpacity(0.5), fontSize: 18),
+                style: TextStyle(color: const Color(0xff5D4037).withOpacity(0.5), fontSize: 18),
               ),
             ),
             GestureDetector(
@@ -160,8 +192,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
                           return Chip(
                             label: Text(model.peoples[v]),
                             labelStyle: const TextStyle(color: Color(0xffFFFFFF)),
-                            backgroundColor:
-                                const Color(0xff795548).withOpacity(0.8),
+                            backgroundColor: const Color(0xff795548).withOpacity(0.8),
                             elevation: 6,
                             onDeleted: () {
                               controller.selectedValues.remove(v); // 이거 obs

@@ -497,11 +497,10 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   Future<bool?> _removeContentsMethod(int number, int index) async {
-    var contents = controller.meetingContentsModel[number].contentsModels[index];
     return await Get.defaultDialog<bool>(
       title: '컨텐츠 지움 확인',
       titleStyle: const TextStyle(fontWeight: FontWeight.bold),
-      middleText: '"${contents.contentsString}"를 삭제 합니까?',
+      middleText: '"${controller.meetingContentsModel[number].contentsModels[index].contentsString}"를 삭제 합니까?',
       backgroundColor: const Color(0xff795548),
       textCancel: '아니오',
       textConfirm: '예',

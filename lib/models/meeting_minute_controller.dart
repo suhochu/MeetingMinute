@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:meetingminutes52/models/models.dart';
 
 class MeetingMinuteController extends GetxController {
+  String projectName = '';
+  RxInt selectedProject = (-1).obs;
   String meetingMinuteId = '';
   String meetingTitle = '';
   String meetingTime = '';
