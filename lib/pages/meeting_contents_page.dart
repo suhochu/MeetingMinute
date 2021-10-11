@@ -153,7 +153,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
               ])),
               BottomSheetAgendaStatusWidget(number: -1),
               Text('Agenda : ', style: bottomSheetSubTitleTextStyle()),
-              bottomSheetTextField(_agendaController, '아젠다 #${index + 1} 를 입력하세요', null, 2, 100),
+              bottomSheetTextField(_agendaController, '아젠다 #${index + 1} 를 입력하세요', null, 1, 40),
               completeButton(
                 () {
                   if (_agendaController.text != '') {
@@ -230,7 +230,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                     ),
                   ),
                   style: const TextStyle(color: Color(0xff5D4037)),
-                  maxLines: 2,
+                  maxLines: 1,
                   maxLength: 40,
                 ),
               ),

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:meetingminutes52/components/buttons.dart';
+import 'package:meetingminutes52/models/meeting_resource_controller.dart';
+import 'package:meetingminutes52/pages/resource_manage_page.dart';
 import 'package:meetingminutes52/theme/color_style.dart';
 import 'package:meetingminutes52/pages/meeting_home.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  LoginPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,7 @@ class LoginPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               loginButton(const Text('로컬에서 로그인'), () {
-                Get.off(const MeetingHomePage());
+                Get.off(MeetingHomePage());
               }),
               const SizedBox(
                 height: 30,

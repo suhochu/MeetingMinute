@@ -27,7 +27,7 @@ Widget loginButton(Widget widget, VoidCallback onPressed) {
 }
 
 PopupMenuButton<String> customPopupMenuButton(
-    TextEditingController textController, List<String> options, {int projectSelect = 0}) {
+    TextEditingController textController, List<String> options) {
   var controller = Get.put<MeetingMinuteController>(MeetingMinuteController());
   return PopupMenuButton(
     padding: const EdgeInsets.only(top: 5.0),
@@ -39,9 +39,6 @@ PopupMenuButton<String> customPopupMenuButton(
     offset: const Offset(80, 40),
     onSelected: (String valueSelected) {
       textController.text = valueSelected;
-      if(options.contains(valueSelected)) {
-        controller.selectedProject.value = options.indexOf(valueSelected);
-      }
       controller.formKey.currentState!.save();
     },
     itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[

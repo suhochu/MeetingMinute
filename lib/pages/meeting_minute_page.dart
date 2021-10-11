@@ -6,9 +6,10 @@ import 'package:meetingminutes52/components/textfield_style.dart';
 import 'package:meetingminutes52/components/time_component.dart';
 import 'package:meetingminutes52/models/meeting_minute_controller.dart';
 import 'package:meetingminutes52/models/meeting_resource_controller.dart';
-import 'package:meetingminutes52/models/models.dart' as model;
+import 'package:meetingminutes52/pages/resource_manage_page.dart';
 
 class MeetingMinutePage extends GetView<MeetingMinuteController> {
+
   final projectController = Get.put(MeetingSourceController());
 
   final TextEditingController projectTeamCtrl = TextEditingController();
@@ -17,6 +18,8 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
   final TextEditingController meetingPlaceCtrl = TextEditingController();
   final TextEditingController meetingModeratorCtrl = TextEditingController();
   final TextEditingController meetingSelectCtrl = TextEditingController();
+
+  List<String> peopleList = [];
 
   final double defaultDividerSize = 40.0;
 
@@ -29,9 +32,13 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       body: SingleChildScrollView(
         child: Center(
           child: SizedBox(
-            width: Get.size.width * 0.95,
-            child: mainFormPage(ctx),
-          ),
+              width: Get.size.width * 0.95,
+              child: GetX<MeetingSourceController>(
+                builder: (_) {
+                  return mainFormPage(ctx);
+                },
+              ) // child: mainFormPage(ctx)),
+              ),
         ),
       ),
     );
@@ -64,24 +71,64 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
 
   Widget projectTeamWidget() {
     List<String> projects = [];
-    for (var project in projectController.projects) {
-      projects.add(project.projectName);
+    for (var value in projectController.projects) {
+      projects.add(value.projectName);
     }
-    return TextFormField(
-      controller: projectTeamCtrl,
-      textAlign: TextAlign.center,
-      decoration: textFormFieldInputStyle(
-        '프로젝트',
-        customPopupMenuButton(projectTeamCtrl, projects, projectSelect: 1),
+    return PopupMenuButton(
+      padding: const EdgeInsets.only(top: 5.0),
+      child: AbsorbPointer(
+        child: TextFormField(
+          controller: projectTeamCtrl,
+          textAlign: TextAlign.center,
+          decoration: textFormFieldInputStyle(
+            '프로젝트',
+            const Icon(
+              Icons.arrow_drop_down,
+              color: Color(0xff5D4037),
+              size: 40,
+            ),
+          ),
+          style: const TextStyle(color: Color(0xff5D4037)),
+          onSaved: (value) {
+            controller.projectName = value ?? '';
+          },
+          onChanged: (value) {
+            controller.projectName = value;
+          },
+        ),
       ),
-      style: const TextStyle(color: Color(0xff5D4037)),
-      onSaved: (value) {
-        controller.projectName = value ?? '';
+      offset: const Offset(80, 40),
+      onSelected: (String valueSelected) {
+        projectTeamCtrl.text = valueSelected;
+        if (projects.contains(valueSelected)) {
+          controller.selectedProject.value = projects.indexOf(valueSelected);
+        }
       },
-      onChanged: (value) {
-        controller.projectName = value;
-      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        ...projects.map<PopupMenuItem<String>>((String value) {
+          return PopupMenuItem<String>(
+            child: Center(child: Text(value)),
+            value: value,
+          );
+        }).toList()
+      ],
     );
+
+    //   TextFormField(
+    //   controller: projectTeamCtrl,
+    //   textAlign: TextAlign.center,
+    //   decoration: textFormFieldInputStyle(
+    //     '프로젝트',
+    //     customPopupMenuButton(projectTeamCtrl, projects, projectSelect: 1),
+    //   ),
+    //   style: const TextStyle(color: Color(0xff5D4037)),
+    //   onSaved: (value) {
+    //     controller.projectName = value ?? '';
+    //   },
+    //   onChanged: (value) {
+    //     controller.projectName = value;
+    //   },
+    // );
   }
 
   Container meetingTitleWidget() {
@@ -147,6 +194,12 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
   }
 
   Widget meetingAttendantWidget(BuildContext ctx) {
+
+    if (controller.selectedProject.value != -1) {
+      for (var people in projectController.projects[controller.selectedProject.value].peoples) {
+        peopleList.add(people.name);
+      }
+    }
     return Column(
       children: [
         Row(
@@ -166,7 +219,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
                   color: Color(0xff5D4037),
                 ),
                 onTap: () async {
-                  showMultiSelect(ctx);
+                  showMultiSelect(ctx, peopleList);
                 }),
           ],
         ),
@@ -190,7 +243,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
                         spacing: 10.0,
                         children: controller.selectedValues.map((v) {
                           return Chip(
-                            label: Text(model.peoples[v]),
+                            label: Text(peopleList[v]),
                             labelStyle: const TextStyle(color: Color(0xffFFFFFF)),
                             backgroundColor: const Color(0xff795548).withOpacity(0.8),
                             elevation: 6,
@@ -237,7 +290,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
         ...controller.selectedValues
             .map((index) {
-              return model.peoples[index];
+              return peopleList[index];
             })
             .toList()
             .map<PopupMenuItem<String>>((String value) {
@@ -252,12 +305,18 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
   }
 
   Widget meetingsWidget() {
+    List<String> meetingsList = [];
+    if (controller.selectedProject.value != -1) {
+      for (var meeting in projectController.projects[controller.selectedProject.value].meetings) {
+        meetingsList.add(meeting.meetingName);
+      }
+    }
     return TextFormField(
       controller: meetingTitleCtrl,
       textAlign: TextAlign.center,
       decoration: textFormFieldInputStyle(
         '회의 종류',
-        customPopupMenuButton(meetingTitleCtrl, model.meetings),
+        customPopupMenuButton(meetingTitleCtrl, meetingsList),
       ),
       style: const TextStyle(color: Color(0xff5D4037)),
       onSaved: (value) {

@@ -25,13 +25,13 @@ class DrawerPage extends StatelessWidget {
                   backgroundImage: AssetImage('assets/images/princessjju.png'),
                 ),
                 SizedBox(height: 15),
-                Text('눈이 부시게 예쁜 주영공주님',
+                Text('이주영',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         fontStyle: FontStyle.italic,
                         color: Colors.white.withOpacity(0.7))),
-                Text('abc.def@gmai.com',
+                Text('abc.def@gmail.com',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

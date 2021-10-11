@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:meetingminutes52/models/meeting_resource_controller.dart';
 import 'package:meetingminutes52/pages/drawer_page.dart';
 import 'package:meetingminutes52/pages/meeting_contents_page.dart';
 import 'package:meetingminutes52/pages/meeting_minute_page.dart';
-import 'package:meetingminutes52/pages/meeting_todo_page.dart';
+import 'package:meetingminutes52/pages/resource_manage_page.dart';
 
 class MeetingHomePage extends StatefulWidget {
   const MeetingHomePage({Key? key}) : super(key: key);
@@ -12,9 +14,11 @@ class MeetingHomePage extends StatefulWidget {
 }
 
 class _MeetingHomePageState extends State<MeetingHomePage> {
+
+  final projectController = Get.put(MeetingSourceController());
+
   int _selectedIndex = 0;
   final List<String> _appBarTitle = ['기본 정보', '회의 내용', '해야 할일'];
-
   final List<Widget> _meetingPages = [
     MeetingMinutePage(),
     MeetingContentsPage(),
@@ -22,7 +26,14 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) => gotoResourceMng());
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // var controller = Get.put<MeetingSourceController>(MeetingSourceController());
     return Scaffold(
       appBar: meetingMinutePageAppBar(),
       drawer: meetingMinuteDrawer(),
@@ -103,5 +114,12 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
         // ),
       ],
     );
+  }
+
+  gotoResourceMng() {
+    if (projectController.projects.isEmpty) {
+      Get.to(ResourceManagementPage());
+    }
+    //todo 프로젝트가 하나도 없으면, 뒤로 가지 못하게 막을 것
   }
 }
