@@ -20,11 +20,11 @@ class DrawerPage extends StatelessWidget {
                 SizedBox(
                   height: topPadding + 10,
                 ),
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 60,
                   backgroundImage: AssetImage('assets/images/princessjju.png'),
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 Text('이주영',
                     style: TextStyle(
                         fontSize: 18,
@@ -37,7 +37,7 @@ class DrawerPage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         fontStyle: FontStyle.italic,
                         color: Colors.white.withOpacity(0.7))),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -50,7 +50,6 @@ class DrawerPage extends StatelessWidget {
           ),
           title: const Text('User Profile'),
           onTap: () {
-            print('Home is clicked');
           },
         ),
         const SizedBox(height: 10),
@@ -61,7 +60,7 @@ class DrawerPage extends StatelessWidget {
           ),
           title: const Text('프로젝트 관리'),
           onTap: () {
-            Get.to(ResourceManagementPage());
+            Get.to(ResourceManagementPage(first: false,));
           },
         ),
         const SizedBox(height: 10),
@@ -72,7 +71,6 @@ class DrawerPage extends StatelessWidget {
           ),
           title: const Text('탐색'),
           onTap: () {
-            print('Q&A is clicked');
           },
         ),
         const SizedBox(height: 10),
@@ -81,9 +79,8 @@ class DrawerPage extends StatelessWidget {
             Icons.settings,
             color: Colors.grey[850],
           ),
-          title: Text('Setting'),
+          title: const Text('Setting'),
           onTap: () {
-            print('Setting is clicked');
           },
         ),
       ],

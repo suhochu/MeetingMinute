@@ -6,8 +6,8 @@ import 'package:meetingminutes52/pages/resource_manage_page.dart';
 import 'package:meetingminutes52/theme/color_style.dart';
 import 'package:meetingminutes52/pages/meeting_home.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({Key? key}) : super(key: key);
+class LoginPage extends GetView<MeetingSourceController> {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class LoginPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               loginButton(const Text('로컬에서 로그인'), () {
-                Get.off(MeetingHomePage());
+                Get.off(controller.projects.isEmpty ? ResourceManagementPage(first: true,) : MeetingHomePage());
               }),
               const SizedBox(
                 height: 30,

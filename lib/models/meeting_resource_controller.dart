@@ -1,21 +1,31 @@
 import 'package:get/get.dart';
 import 'package:meetingminutes52/models/project_model.dart';
 
-
 class MeetingSourceController extends GetxController {
-
   RxList<ProjectModel> projects = <ProjectModel>[].obs;
+  RxInt selectedIndex = 0.obs;
+  List<String> projectTeamList = [];
 
   void addingProject(ProjectModel newProject) {
     projects.add(newProject);
+    updateProjectNameStringList();
   }
 
   void editingProject(int number, ProjectModel newProject) {
     projects[number] = newProject;
+    updateProjectNameStringList();
   }
 
   void removingProject(int number) {
     projects.removeAt(number);
+    updateProjectNameStringList();
+  }
+
+  void updateProjectNameStringList() {
+    projectTeamList.clear();
+    for (var value in projects) {
+      projectTeamList.add(value.projectName);
+    }
   }
 
   void addingPeople(int number, People newPeople) {
@@ -58,10 +68,9 @@ class MeetingSourceController extends GetxController {
     ProjectModel dummyModel = projects[number];
     dummyModel.meetings.add(newMeeting);
     projects[number] = dummyModel;
-    
   }
 
-  void editingMeetings(int number,int index, Meetings newMeetings) {
+  void editingMeetings(int number, int index, Meetings newMeetings) {
     ProjectModel dummyModel = projects[number];
     dummyModel.meetings[index] = newMeetings;
     projects[number] = dummyModel;
@@ -72,6 +81,4 @@ class MeetingSourceController extends GetxController {
     dummyModel.meetings.removeAt(index);
     projects[number] = dummyModel;
   }
-
-
 }

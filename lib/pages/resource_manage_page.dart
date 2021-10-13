@@ -5,10 +5,13 @@ import 'package:meetingminutes52/components/custom_card.dart';
 import 'package:meetingminutes52/components/textfield_style.dart';
 import 'package:meetingminutes52/models/meeting_resource_controller.dart';
 import 'package:meetingminutes52/models/project_model.dart';
+import 'package:meetingminutes52/pages/meeting_home.dart';
 import 'package:meetingminutes52/theme/text_style.dart';
 
 class ResourceManagementPage extends GetView<MeetingSourceController> {
-  ResourceManagementPage({Key? key}) : super(key: key);
+  ResourceManagementPage({Key? key, required this.first}) : super(key: key);
+
+  bool first;
 
   final TextEditingController _projectNameController = TextEditingController();
   final TextEditingController _teamNameController = TextEditingController();
@@ -21,7 +24,21 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(backgroundColor: const Color(0xff795548), title: const Text('회의 자원 관리')),
+        appBar: AppBar(
+          backgroundColor: const Color(0xff795548),
+          title: const Text('회의 자원 관리'),
+          actions: [
+            first ? TextButton(
+                child: const Text('회의록 작성'),
+                onPressed: () {
+                  if (controller.projects.isNotEmpty) {
+                    Get.off(MeetingHomePage());
+                  } else {
+                    Get.defaultDialog(content: const Text('프로젝트를 하나 이상 입력 하세요'), title: '알림');
+                  }
+                }) : Container()
+          ],
+        ),
         body: SingleChildScrollView(
             child: Center(
                 child: Container(

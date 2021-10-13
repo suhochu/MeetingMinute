@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:meetingminutes52/components/time_component.dart';
 import 'package:meetingminutes52/models/meeting_minute_controller.dart';
 import 'package:meetingminutes52/models/models.dart';
 import 'package:meetingminutes52/theme/color_style.dart';
@@ -75,9 +74,7 @@ class MeetingTodoPage extends GetView<MeetingMinuteController> {
         todoList.add(element);
       }
     }
-    for(int i=0; i<todoList.length;i++) {
-      print('todoList is ${todoList[i].intDueDate}');
-    }
+
     return todoList;
   }
 }

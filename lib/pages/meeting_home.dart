@@ -6,40 +6,25 @@ import 'package:meetingminutes52/pages/meeting_contents_page.dart';
 import 'package:meetingminutes52/pages/meeting_minute_page.dart';
 import 'package:meetingminutes52/pages/resource_manage_page.dart';
 
-class MeetingHomePage extends StatefulWidget {
-  const MeetingHomePage({Key? key}) : super(key: key);
+class MeetingHomePage extends GetView<MeetingSourceController> {
 
-  @override
-  _MeetingHomePageState createState() => _MeetingHomePageState();
-}
-
-class _MeetingHomePageState extends State<MeetingHomePage> {
-
-  final projectController = Get.put(MeetingSourceController());
-
-  int _selectedIndex = 0;
   final List<String> _appBarTitle = ['기본 정보', '회의 내용', '해야 할일'];
   final List<Widget> _meetingPages = [
     MeetingMinutePage(),
     MeetingContentsPage(),
-    // MeetingTodoPage()
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) => gotoResourceMng());
-  }
 
   @override
   Widget build(BuildContext context) {
-    // var controller = Get.put<MeetingSourceController>(MeetingSourceController());
-    return Scaffold(
-      appBar: meetingMinutePageAppBar(),
-      drawer: meetingMinuteDrawer(),
-      body: meetingMinuteBody(),
-      bottomNavigationBar: meetingBottomNavi(),
-    );
+    return Obx(
+            () => Scaffold(
+              appBar: meetingMinutePageAppBar(),
+              drawer: meetingMinuteDrawer(),
+              body: meetingMinuteBody(),
+              bottomNavigationBar: meetingBottomNavi(),
+            ),
+          );
   }
 
   AppBar meetingMinutePageAppBar() {
@@ -66,7 +51,7 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
       elevation: 0,
       backgroundColor: Colors.transparent,
       title: Text(
-        _appBarTitle[_selectedIndex],
+        _appBarTitle[controller.selectedIndex.value],
         style: const TextStyle(fontSize: 20, color: Color(0xff5D4037), fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
       ),
@@ -81,7 +66,7 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
   }
 
   Widget meetingMinuteBody() {
-    return _meetingPages[_selectedIndex];
+    return _meetingPages[controller.selectedIndex.value];
   }
 
   BottomNavigationBar meetingBottomNavi() {
@@ -92,11 +77,9 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
       unselectedItemColor: const Color(0xffD7CCC8).withOpacity(0.5),
       selectedFontSize: 14,
       unselectedFontSize: 14,
-      currentIndex: _selectedIndex,
+      currentIndex: controller.selectedIndex.value,
       onTap: (int index) {
-        setState(() {
-          _selectedIndex = index;
-        });
+        controller.selectedIndex.value = index;
       },
       items: const [
         BottomNavigationBarItem(
@@ -114,12 +97,5 @@ class _MeetingHomePageState extends State<MeetingHomePage> {
         // ),
       ],
     );
-  }
-
-  gotoResourceMng() {
-    if (projectController.projects.isEmpty) {
-      Get.to(ResourceManagementPage());
-    }
-    //todo 프로젝트가 하나도 없으면, 뒤로 가지 못하게 막을 것
   }
 }

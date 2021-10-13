@@ -6,10 +6,8 @@ import 'package:meetingminutes52/components/textfield_style.dart';
 import 'package:meetingminutes52/components/time_component.dart';
 import 'package:meetingminutes52/models/meeting_minute_controller.dart';
 import 'package:meetingminutes52/models/meeting_resource_controller.dart';
-import 'package:meetingminutes52/pages/resource_manage_page.dart';
 
 class MeetingMinutePage extends GetView<MeetingMinuteController> {
-
   final projectController = Get.put(MeetingSourceController());
 
   final TextEditingController projectTeamCtrl = TextEditingController();
@@ -18,8 +16,6 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
   final TextEditingController meetingPlaceCtrl = TextEditingController();
   final TextEditingController meetingModeratorCtrl = TextEditingController();
   final TextEditingController meetingSelectCtrl = TextEditingController();
-
-  List<String> peopleList = [];
 
   final double defaultDividerSize = 40.0;
 
@@ -70,10 +66,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
   }
 
   Widget projectTeamWidget() {
-    List<String> projects = [];
-    for (var value in projectController.projects) {
-      projects.add(value.projectName);
-    }
+    List<String> projects = projectController.projectTeamList;
     return PopupMenuButton(
       padding: const EdgeInsets.only(top: 5.0),
       child: AbsorbPointer(
@@ -113,22 +106,6 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
         }).toList()
       ],
     );
-
-    //   TextFormField(
-    //   controller: projectTeamCtrl,
-    //   textAlign: TextAlign.center,
-    //   decoration: textFormFieldInputStyle(
-    //     '프로젝트',
-    //     customPopupMenuButton(projectTeamCtrl, projects, projectSelect: 1),
-    //   ),
-    //   style: const TextStyle(color: Color(0xff5D4037)),
-    //   onSaved: (value) {
-    //     controller.projectName = value ?? '';
-    //   },
-    //   onChanged: (value) {
-    //     controller.projectName = value;
-    //   },
-    // );
   }
 
   Container meetingTitleWidget() {
@@ -194,6 +171,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
   }
 
   Widget meetingAttendantWidget(BuildContext ctx) {
+    List<String> peopleList = [];
 
     if (controller.selectedProject.value != -1) {
       for (var people in projectController.projects[controller.selectedProject.value].peoples) {
@@ -263,6 +241,12 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
   }
 
   Widget meetingModeratorWidget() {
+    List<String> peopleList = [];
+    if (controller.selectedProject.value != -1) {
+      for (var people in projectController.projects[controller.selectedProject.value].peoples) {
+        peopleList.add(people.name);
+      }
+    }
     return PopupMenuButton(
       padding: const EdgeInsets.only(top: 5.0),
       child: AbsorbPointer(
