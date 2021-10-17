@@ -15,6 +15,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   final TextEditingController _contentsController = TextEditingController();
   final TextEditingController _todoController = TextEditingController();
 
+
   MeetingContentsPage({Key? key}) : super(key: key);
 
   @override
@@ -42,7 +43,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
       (index) {
         if (index == controller.meetingContentsModel.length) {
           return GestureDetector(
-            child: AddingButtonWidget('아젠다 추가'),
+            child: addingButtonWidget('아젠다 추가'),
             onTap: () => _addingAgendaMethod(index), //Adding Contents
           );
         } else {
@@ -130,7 +131,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
 
   void _addingAgendaMethod(int index) {
     _agendaController.clear();
-    String agendaId = controller.meetingMinuteId + '-' + controller.agendaModelCount.toString();
+    String agendaId = controller.meetingMinute.meetingMinuteId + '-' + controller.meetingMinute.agendaModelCount.toString();
 
     Get.bottomSheet(
       SingleChildScrollView(

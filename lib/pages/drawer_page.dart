@@ -25,7 +25,7 @@ class DrawerPage extends StatelessWidget {
                   backgroundImage: AssetImage('assets/images/princessjju.png'),
                 ),
                 const SizedBox(height: 15),
-                Text('이주영',
+                Text('세젤예쭈',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

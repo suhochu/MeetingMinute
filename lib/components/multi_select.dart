@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:meetingminutes52/models/meeting_minute_controller.dart';
-import 'package:meetingminutes52/models/models.dart' as model;
 
 class MultiSelectDialogItem {
   const MultiSelectDialogItem(this.value, this.label);
@@ -48,7 +47,7 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
   }
 
   void _onCancelTap() {
-    Get.back(result: widget.initialSelectedValues);
+    Get.back();
   }
 
   void _onSubmitTap() {
@@ -96,7 +95,7 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
   }
 }
 
-Future<Widget?> showMultiSelect(BuildContext ctx, List<String> list) async {
+void showMultiSelect(BuildContext ctx, List<String> list) async {
   var controller = Get.put<MeetingMinuteController>(MeetingMinuteController());
 
   Set<int> dummySelectedValues = <int>{};
@@ -105,17 +104,18 @@ Future<Widget?> showMultiSelect(BuildContext ctx, List<String> list) async {
     context: ctx,
     builder: (context) {
       return MultiSelectDialog(
+
         title: 'Select Item(s)',
         items: items(list),
         initialSelectedValues: controller.selectedValues,
       );
     },
   );
+
   if(selectedItem != null) {
     dummySelectedValues = selectedItem;
+    controller.editingSelectedValues(dummySelectedValues);
   }
-
-  controller.editingSelectedValues(dummySelectedValues);
 }
 
 List<MultiSelectDialogItem> items(List<String> list) {

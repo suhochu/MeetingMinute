@@ -28,13 +28,14 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       body: SingleChildScrollView(
         child: Center(
           child: SizedBox(
-              width: Get.size.width * 0.95,
-              child: GetX<MeetingSourceController>(
-                builder: (_) {
-                  return mainFormPage(ctx);
-                },
-              ) // child: mainFormPage(ctx)),
-              ),
+            width: Get.size.width * 0.95,
+            child: GetX<MeetingSourceController>(builder: (_) {
+              if (projectController.hasBeenUpdated) {
+                clearContents();
+              }
+              return mainFormPage(ctx);
+            }),
+          ), // child: mainFormPage(ctx)),
         ),
       ),
     );
@@ -54,7 +55,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
           SizedBox(height: defaultDividerSize),
           meetingPlaceWidget(),
           SizedBox(height: defaultDividerSize),
-          meetingAttendantWidget(ctx),
+          Obx(() => meetingAttendantWidget(ctx)),
           SizedBox(height: defaultDividerSize),
           meetingModeratorWidget(),
           SizedBox(height: defaultDividerSize),
@@ -83,10 +84,10 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
           ),
           style: const TextStyle(color: Color(0xff5D4037)),
           onSaved: (value) {
-            controller.projectName = value ?? '';
+            controller.meetingMinute.projectName = value ?? '';
           },
           onChanged: (value) {
-            controller.projectName = value;
+            controller.meetingMinute.projectName = value;
           },
         ),
       ),
@@ -118,7 +119,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
         decoration: textFormFieldInputStyle('회의 제목', null),
         style: const TextStyle(color: Color(0xff5D4037)),
         onChanged: (val) {
-          controller.meetingTitle = val;
+          controller.meetingMinute.meetingTitle = val;
         },
       ),
     );
@@ -128,7 +129,12 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
     return GestureDetector(
       onTap: () async {
         meetingDateCtrl.text = await yearMonthDayTimePicker(ctx);
-        controller.meetingTime = meetingDateCtrl.text;
+        print('time is ${meetingDateCtrl.text}');
+        if (meetingDateCtrl.text != '') {
+          controller.meetingMinute.meetingTime = meetingDateCtrl.text;
+        } else {
+          meetingDateCtrl.text = controller.meetingMinute.meetingTime;
+        }
       },
       child: AbsorbPointer(
         child: TextFormField(
@@ -148,6 +154,9 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
   }
 
   Widget meetingPlaceWidget() {
+    if (projectController.projects.isEmpty) {
+      controller.selectedProject.value = -1;
+    }
     return TextFormField(
       controller: meetingPlaceCtrl,
       textAlign: TextAlign.center,
@@ -162,17 +171,19 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       ),
       style: const TextStyle(color: Color(0xff5D4037)),
       onSaved: (value) {
-        controller.meetingPlace = value ?? '';
+        controller.meetingMinute.meetingPlace = value ?? '';
       },
       onChanged: (value) {
-        controller.meetingPlace = value;
+        controller.meetingMinute.meetingPlace = value;
       },
     );
   }
 
   Widget meetingAttendantWidget(BuildContext ctx) {
     List<String> peopleList = [];
-
+    if (projectController.projects.isEmpty) {
+      controller.selectedProject.value = -1;
+    }
     if (controller.selectedProject.value != -1) {
       for (var people in projectController.projects[controller.selectedProject.value].peoples) {
         peopleList.add(people.name);
@@ -216,22 +227,20 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Obx(() {
-                    return Wrap(
-                        spacing: 10.0,
-                        children: controller.selectedValues.map((v) {
-                          return Chip(
-                            label: Text(peopleList[v]),
-                            labelStyle: const TextStyle(color: Color(0xffFFFFFF)),
-                            backgroundColor: const Color(0xff795548).withOpacity(0.8),
-                            elevation: 6,
-                            onDeleted: () {
-                              controller.selectedValues.remove(v); // 이거 obs
-                            },
-                          );
-                        }).toList());
-                  }),
-                ),
+                  child: Wrap(
+                            spacing: 10.0,
+                            children: controller.selectedValues.map((v) {
+                              return Chip(
+                                label: Text(peopleList[v]),
+                                labelStyle: const TextStyle(color: Color(0xffFFFFFF)),
+                                backgroundColor: const Color(0xff795548).withOpacity(0.8),
+                                elevation: 6,
+                                onDeleted: () {
+                                  controller.selectedValues.remove(v); // 이거 obs
+                                },
+                              );
+                            }).toList())
+                  ),
               ],
             ),
           ),
@@ -242,6 +251,9 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
 
   Widget meetingModeratorWidget() {
     List<String> peopleList = [];
+    if (projectController.projects.isEmpty) {
+      controller.selectedProject.value = -1;
+    }
     if (controller.selectedProject.value != -1) {
       for (var people in projectController.projects[controller.selectedProject.value].peoples) {
         peopleList.add(people.name);
@@ -263,7 +275,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
           ),
           style: const TextStyle(color: Color(0xff5D4037)),
           onSaved: (value) {
-            controller.meetingModerator = value ?? '';
+            controller.meetingMinute.meetingModerator = value ?? '';
           },
         ),
       ),
@@ -290,6 +302,9 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
 
   Widget meetingsWidget() {
     List<String> meetingsList = [];
+    if (projectController.projects.isEmpty) {
+      controller.selectedProject.value = -1;
+    }
     if (controller.selectedProject.value != -1) {
       for (var meeting in projectController.projects[controller.selectedProject.value].meetings) {
         meetingsList.add(meeting.meetingName);
@@ -304,11 +319,23 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       ),
       style: const TextStyle(color: Color(0xff5D4037)),
       onSaved: (value) {
-        controller.meetings = value ?? '';
+        controller.meetingMinute.meetings = value ?? '';
       },
       onChanged: (value) {
-        controller.meetingPlace = value;
+        controller.meetingMinute.meetingPlace = value;
       },
     );
+  }
+
+  void clearContents() {
+    meetingPlaceCtrl.clear();
+    meetingModeratorCtrl.clear();
+    meetingSelectCtrl.clear();
+    projectTeamCtrl.clear();
+    meetingTitleCtrl.clear();
+    meetingDateCtrl.clear();
+    controller.selectedValues.clear();
+    controller.meetingContentsModel.clear();
+    WidgetsBinding.instance!.addPostFrameCallback((_) => projectController.hasBeenUpdated = false);
   }
 }

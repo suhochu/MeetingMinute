@@ -1,0 +1,1 @@
+List<String> status = ['Initiated', 'Processing', 'Delayed', 'Done', 'Deprecated'];

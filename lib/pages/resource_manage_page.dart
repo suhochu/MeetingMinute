@@ -10,7 +10,6 @@ import 'package:meetingminutes52/theme/text_style.dart';
 
 class ResourceManagementPage extends GetView<MeetingSourceController> {
   ResourceManagementPage({Key? key, required this.first}) : super(key: key);
-
   bool first;
 
   final TextEditingController _projectNameController = TextEditingController();
@@ -24,29 +23,80 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color(0xff795548),
-          title: const Text('회의 자원 관리'),
-          actions: [
-            first ? TextButton(
-                child: const Text('회의록 작성'),
-                onPressed: () {
-                  if (controller.projects.isNotEmpty) {
-                    Get.off(MeetingHomePage());
-                  } else {
-                    Get.defaultDialog(content: const Text('프로젝트를 하나 이상 입력 하세요'), title: '알림');
-                  }
-                }) : Container()
-          ],
+      appBar: AppBar(
+        backgroundColor: const Color(0xff795548),
+        title: const Text('회의 자원 관리'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () async {
+            await saveProject();
+            Get.back();
+          },
         ),
-        body: SingleChildScrollView(
-            child: Center(
-                child: Container(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    width: Get.size.width * 0.95,
-                    child: Obx(() => Column(
-                          children: _projectListBuild(context),
-                        ))))));
+        actions: [
+          first
+              ? TextButton(
+                  child: const Text(
+                    '회의록 작성',
+                    style: TextStyle(color: Color(0xffFF5722), fontWeight: FontWeight.w600, fontSize: 18),
+                  ),
+                  onPressed: () {
+                    if (controller.projects.isNotEmpty) {
+                      Get.off(MeetingHomePage());
+                    } else {
+                      Get.defaultDialog(content: const Text('프로젝트를 하나 이상 입력 하세요'), title: '알림');
+                    }
+                  })
+              : Container(),
+          const SizedBox(width: 20),
+          GestureDetector(
+              child: const Icon(Icons.delete),
+              onTap: () async {
+                bool isConfirmed = false;
+                await Get.defaultDialog(
+                  content: const Text('모든 프로젝트를 삭제 합니까?'),
+                  title: '알림',
+                  textConfirm: '삭제',
+                  onConfirm: () {
+                    isConfirmed = true;
+                    Get.back();
+                  },
+                  textCancel: '취소',
+                  onCancel: () {
+                    isConfirmed = false;
+                  },
+                );
+                if (isConfirmed) {
+                  controller.deleteDB();
+                }
+              }),
+          const SizedBox(
+            width: 20,
+          ),
+          GestureDetector(
+              child: const Icon(Icons.save),
+              onTap: () async {
+                await saveProject();
+              }),
+          const SizedBox(
+            width: 20,
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+          child: Center(
+              child: Container(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  width: Get.size.width * 0.95,
+                  child: Obx(() => Column(
+                        children: _projectListBuild(context),
+                      ))))),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          controller.showDB();
+        },
+      ),
+    );
   }
 
   List<Widget> _projectListBuild(BuildContext ctx) {
@@ -54,7 +104,7 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
     cardList = List.generate(controller.projects.length + 1, (index) {
       if (index == controller.projects.length) {
         return GestureDetector(
-          child: AddingButtonWidget('프로젝트 추가'),
+          child: addingButtonWidget('프로젝트 추가'),
           onTap: () => _addingProjectMethod(index), //Adding Contents
         );
       } else {
@@ -201,11 +251,7 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
               bottomSheetTextField(_teamNameController, '프로젝트 담당 팀을 변경하세요', null, 1, 30),
               completeButton(() {
                 if (_projectNameController.text != '' && _projectNameController.text != '') {
-                  ProjectModel newProject = ProjectModel(
-                    projectName: _projectNameController.text,
-                    teamName: _teamNameController.text,
-                  );
-                  controller.editingProject(number, newProject);
+                  controller.editingProject(number, _projectNameController.text, _teamNameController.text);
                   _projectNameController.clear();
                   _teamNameController.clear();
                 }
@@ -752,5 +798,28 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
           Get.back();
         });
     return removeConfirmed;
+  }
+
+  Future<void> saveProject() async {
+    if (controller.notYetSaved) {
+      bool isConfirmed = false;
+      await Get.defaultDialog(
+        content: const Text('변경 사항을 저장 합니까?'),
+        title: '알림',
+        textConfirm: '저장',
+        onConfirm: () {
+          isConfirmed = true;
+          Get.back();
+        },
+        textCancel: '취소',
+        onCancel: () {
+          isConfirmed = false;
+        },
+      );
+      if (isConfirmed) {
+        controller.saveToDB();
+        controller.notYetSaved = false;
+      }
+    }
   }
 }
