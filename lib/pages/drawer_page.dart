@@ -1,44 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:meetingminutes52/models/user_controller.dart';
+import 'package:meetingminutes52/pages/profile_page.dart';
 import 'package:meetingminutes52/pages/resource_manage_page.dart';
 
-class DrawerPage extends StatelessWidget {
+class DrawerPage extends GetView<UserController> {
   const DrawerPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+
     double topPadding = Get.mediaQuery.padding.top;
+
+
     return ListView(
       padding: EdgeInsets.zero,
       children: [
         ClipRRect(
-          borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
+          borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20)),
           child: Container(
             color: const Color(0xff795548),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: topPadding + 10,
-                ),
-                const CircleAvatar(
-                  radius: 60,
-                  backgroundImage: AssetImage('assets/images/princessjju.png'),
-                ),
-                const SizedBox(height: 15),
-                Text('세젤예쭈',
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.white.withOpacity(0.7))),
-                Text('abc.def@gmail.com',
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.white.withOpacity(0.7))),
-                const SizedBox(height: 30),
-              ],
+            child: Obx(
+              () => Column(
+                children: [
+                  SizedBox(
+                    height: topPadding + 10,
+                  ),
+                  const CircleAvatar(
+                    radius: 60,
+                    backgroundImage:
+                        AssetImage('assets/images/princessjju.png'),
+                  ),
+                  const SizedBox(height: 15),
+                  Text(controller.user.value.name,
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white.withOpacity(0.7))),
+                  Text(controller.user.value.email,
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white.withOpacity(0.7))),
+                  const SizedBox(height: 30),
+                ],
+              ),
             ),
           ),
         ),
@@ -50,6 +60,7 @@ class DrawerPage extends StatelessWidget {
           ),
           title: const Text('User Profile'),
           onTap: () {
+            Get.to(ProfilePage());
           },
         ),
         const SizedBox(height: 10),
@@ -60,7 +71,9 @@ class DrawerPage extends StatelessWidget {
           ),
           title: const Text('프로젝트 관리'),
           onTap: () {
-            Get.to(ResourceManagementPage(first: false,));
+            Get.to(ResourceManagementPage(
+              first: false,
+            ));
           },
         ),
         const SizedBox(height: 10),
@@ -70,8 +83,7 @@ class DrawerPage extends StatelessWidget {
             color: Colors.grey[850],
           ),
           title: const Text('탐색'),
-          onTap: () {
-          },
+          onTap: () {},
         ),
         const SizedBox(height: 10),
         ListTile(
@@ -80,8 +92,7 @@ class DrawerPage extends StatelessWidget {
             color: Colors.grey[850],
           ),
           title: const Text('Setting'),
-          onTap: () {
-          },
+          onTap: () {},
         ),
       ],
     );

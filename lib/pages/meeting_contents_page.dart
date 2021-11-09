@@ -131,7 +131,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
 
   void _addingAgendaMethod(int index) {
     _agendaController.clear();
-    String agendaId = controller.meetingMinute.meetingMinuteId + '-' + controller.meetingMinute.agendaModelCount.toString();
+    String agendaId = controller.meetingMinute.meetingMinuteId + '-' + (controller.meetingMinute.agendaList.length + 1).toString();
 
     Get.bottomSheet(
       SingleChildScrollView(
@@ -356,7 +356,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   void _addingContentsMethod(int number) {
     _contentsController.clear();
     var agenda = controller.meetingContentsModel[number];
-    String contentsId = agenda.agendaID + '-' + 'CT' + agenda.contentCount.toString();
+    String contentsId = agenda.agendaID + '-' + 'CT' + (agenda.contentsModels.length + 1).toString();
 
     Get.bottomSheet(
       SingleChildScrollView(
@@ -589,7 +589,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
     _todoController.clear();
     controller.tempTodoDueData.value = '';
     var todos = controller.meetingContentsModel[number];
-    String todoId = todos.agendaID + '-' + 'TD' + todos.todoCount.toString();
+    String todoId = todos.agendaID + '-' + 'TD' + (todos.todoModels.length + 1).toString();
 
     Get.bottomSheet(
       SingleChildScrollView(

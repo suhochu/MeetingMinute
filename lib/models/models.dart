@@ -1,11 +1,4 @@
-// List<String> peoples = ['추수호', '이기동', '전준영', '주환엽', '조성환'];
-List<String> meetings = ['아키텍처 디자인 리뷰', '프로젝트 회의', '브레인스토밍', '평가 결과 검토'];
-List<String> meetingPlace = ['모비스온 화상회의', '팀즈 화상회의', '의장동 401회의실', '의장동 402회의실'];
-
-
 class MeetingMinute {
-  String meetingMinuteId;
-  int agendaModelCount = 1;
 
   MeetingMinute({
     required this.projectName,
@@ -19,6 +12,7 @@ class MeetingMinute {
     required this.agendaList,
   });
 
+  String meetingMinuteId;
   String projectName;
   String meetingTitle;
   String meetingTime;
@@ -39,18 +33,11 @@ class AgendaModel {
       required this.issuedTime});
 
   String agendaID = '';
+  String agendaStatus = '';
   String issuedTime = '';
   String agendaString = '';
-  int contentCount = 1;
-  int todoCount = 1;
-  List<ContentsModel> contentsModels;
-  List<TodoModel> todoModels;
-  String agendaStatus = '';
-
-  String todoCountReturn() {
-    todoCount++;
-    return todoCount.toString();
-  }
+  List<ContentsModel> contentsModels = [];
+  List<TodoModel> todoModels = [];
 
   AgendaModel copyWith({
     String? agendaID,

@@ -10,7 +10,11 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
-	<key>CFBundleName</key>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>This App need your photo library.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>This App need your profile picture.</string>
+    <key>CFBundleName</key>
 	<string>meetingminutes52</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>

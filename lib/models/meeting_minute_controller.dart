@@ -50,14 +50,14 @@ class MeetingMinuteController extends GetxController {
   void addingAgenda(String agendaString, String agendaStatus, String issuedTime) {
     meetingContentsModel.add(
       AgendaModel(
-          agendaID: meetingMinute.meetingMinuteId + '-' + meetingMinute.agendaModelCount.toString(),
+          agendaID: meetingMinute.meetingMinuteId + '-' + (meetingMinute.agendaList.length + 1).toString(),
           agendaString: agendaString,
           contentsModels: [],
           todoModels: [],
           agendaStatus: agendaStatus,
           issuedTime: issuedTime),
     );
-    meetingMinute.agendaModelCount++;
+    // meetingMinute.agendaModelCount++;
   }
 
   void editingAgenda(int number, String agendaTitle, String issuedTime, String agendaStatus) {
@@ -73,7 +73,7 @@ class MeetingMinuteController extends GetxController {
     AgendaModel dummyModel = meetingContentsModel[number];
     dummyModel.contentsModels.add(content);
     meetingContentsModel[number] = meetingContentsModel[number].copyWith(contentsModels: dummyModel.contentsModels);
-    meetingContentsModel[number].contentCount++;
+    // meetingContentsModel[number].contentCount++;
   }
 
   void editingContent(int number, int index, ContentsModel content) {
@@ -94,7 +94,7 @@ class MeetingMinuteController extends GetxController {
     meetingContentsModel[number] = meetingContentsModel[number].copyWith(
       todoModels: dummyModel.todoModels,
     );
-    meetingContentsModel[number].todoCount++;
+    // meetingContentsModel[number].todoCount++;
   }
 
   void editingTodos(int number, int index, TodoModel todo) {
