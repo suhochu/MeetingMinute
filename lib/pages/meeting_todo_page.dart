@@ -69,8 +69,8 @@ class MeetingTodoPage extends GetView<MeetingMinuteController> {
 
   List<TodoModel> todoListCombine() {
     List<TodoModel> todoList = [];
-    for (int i = 0; i < controller.meetingContentsModel.length; i++) {
-      for (var element in controller.meetingContentsModel[i].todoModels) {
+    for (int i = 0; i < controller.meetingAgendasModel.length; i++) {
+      for (var element in controller.meetingAgendasModel[i].todoModels) {
         todoList.add(element);
       }
     }

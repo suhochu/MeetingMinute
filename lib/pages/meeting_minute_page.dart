@@ -10,12 +10,12 @@ import 'package:meetingminutes52/models/meeting_resource_controller.dart';
 class MeetingMinutePage extends GetView<MeetingMinuteController> {
   final projectController = Get.put(MeetingSourceController());
 
-  final TextEditingController projectTeamCtrl = TextEditingController();
-  final TextEditingController meetingTitleCtrl = TextEditingController();
-  final TextEditingController meetingDateCtrl = TextEditingController();
-  final TextEditingController meetingPlaceCtrl = TextEditingController();
-  final TextEditingController meetingModeratorCtrl = TextEditingController();
-  final TextEditingController meetingSelectCtrl = TextEditingController();
+  // final TextEditingController projectTeamCtrl = TextEditingController();
+  // final TextEditingController meetingTitleCtrl = TextEditingController();
+  // final TextEditingController meetingDateCtrl = TextEditingController();
+  // final TextEditingController meetingPlaceCtrl = TextEditingController();
+  // final TextEditingController meetingModeratorCtrl = TextEditingController();
+  // final TextEditingController meetingSelectCtrl = TextEditingController();
 
   final double defaultDividerSize = 40.0;
 
@@ -72,7 +72,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       padding: const EdgeInsets.only(top: 5.0),
       child: AbsorbPointer(
         child: TextFormField(
-          controller: projectTeamCtrl,
+          controller: controller.projectTeamCtrl,
           textAlign: TextAlign.center,
           decoration: textFormFieldInputStyle(
             '프로젝트',
@@ -93,9 +93,10 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       ),
       offset: const Offset(80, 40),
       onSelected: (String valueSelected) {
-        projectTeamCtrl.text = valueSelected;
+        controller.projectTeamCtrl.text = valueSelected;
         if (projects.contains(valueSelected)) {
           controller.selectedProject.value = projects.indexOf(valueSelected);
+          controller.meetingMinute.projectName = valueSelected;
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -113,7 +114,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       child: TextFormField(
-        controller: meetingSelectCtrl,
+        controller: controller.meetingSelectCtrl,
         textDirection: TextDirection.ltr,
         textAlign: TextAlign.center,
         decoration: textFormFieldInputStyle('회의 제목', null),
@@ -128,17 +129,16 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
   Widget meetingTimeWidget(BuildContext ctx) {
     return GestureDetector(
       onTap: () async {
-        meetingDateCtrl.text = await yearMonthDayTimePicker(ctx);
-        print('time is ${meetingDateCtrl.text}');
-        if (meetingDateCtrl.text != '') {
-          controller.meetingMinute.meetingTime = meetingDateCtrl.text;
+        controller.meetingDateCtrl.text = await yearMonthDayTimePicker(ctx);
+        if (controller.meetingDateCtrl.text != '') {
+          controller.meetingMinute.meetingTime = controller.meetingDateCtrl.text;
         } else {
-          meetingDateCtrl.text = controller.meetingMinute.meetingTime;
+          controller.meetingDateCtrl.text = controller.meetingMinute.meetingTime;
         }
       },
       child: AbsorbPointer(
         child: TextFormField(
-          controller: meetingDateCtrl,
+          controller: controller.meetingDateCtrl,
           textAlign: TextAlign.center,
           decoration: textFormFieldInputStyle(
               '회의 시간',
@@ -158,12 +158,12 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       controller.selectedProject.value = -1;
     }
     return TextFormField(
-      controller: meetingPlaceCtrl,
+      controller: controller.meetingPlaceCtrl,
       textAlign: TextAlign.center,
       decoration: textFormFieldInputStyle(
         '회의 장소',
         customPopupMenuButton(
-          meetingPlaceCtrl,
+          controller.meetingPlaceCtrl,
           controller.selectedProject.value == -1
               ? []
               : projectController.projects[controller.selectedProject.value].meetingPlace,
@@ -180,10 +180,13 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
   }
 
   Widget meetingAttendantWidget(BuildContext ctx) {
+
     List<String> peopleList = [];
+
     if (projectController.projects.isEmpty) {
       controller.selectedProject.value = -1;
     }
+
     if (controller.selectedProject.value != -1) {
       for (var people in projectController.projects[controller.selectedProject.value].peoples) {
         peopleList.add(people.name);
@@ -237,6 +240,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
                                 elevation: 6,
                                 onDeleted: () {
                                   controller.selectedValues.remove(v); // 이거 obs
+                                  controller.attendantUpdate(peopleList);
                                 },
                               );
                             }).toList())
@@ -263,7 +267,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       padding: const EdgeInsets.only(top: 5.0),
       child: AbsorbPointer(
         child: TextFormField(
-          controller: meetingModeratorCtrl,
+          controller: controller.meetingModeratorCtrl,
           textAlign: TextAlign.center,
           decoration: textFormFieldInputStyle(
             '회의 주관자',
@@ -281,7 +285,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       ),
       offset: const Offset(80, 40),
       onSelected: (String valueSelected) {
-        meetingModeratorCtrl.text = valueSelected;
+        controller.meetingModeratorCtrl.text = valueSelected;
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
         ...controller.selectedValues
@@ -311,11 +315,11 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       }
     }
     return TextFormField(
-      controller: meetingTitleCtrl,
+      controller: controller.meetingTitleCtrl,
       textAlign: TextAlign.center,
       decoration: textFormFieldInputStyle(
         '회의 종류',
-        customPopupMenuButton(meetingTitleCtrl, meetingsList),
+        customPopupMenuButton(controller.meetingTitleCtrl, meetingsList),
       ),
       style: const TextStyle(color: Color(0xff5D4037)),
       onSaved: (value) {
@@ -328,14 +332,14 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
   }
 
   void clearContents() {
-    meetingPlaceCtrl.clear();
-    meetingModeratorCtrl.clear();
-    meetingSelectCtrl.clear();
-    projectTeamCtrl.clear();
-    meetingTitleCtrl.clear();
-    meetingDateCtrl.clear();
+    controller.meetingPlaceCtrl.clear();
+    controller.meetingModeratorCtrl.clear();
+    controller.meetingSelectCtrl.clear();
+    controller.projectTeamCtrl.clear();
+    controller.meetingTitleCtrl.clear();
+    controller.meetingDateCtrl.clear();
     controller.selectedValues.clear();
-    controller.meetingContentsModel.clear();
+    controller.meetingAgendasModel.clear();
     WidgetsBinding.instance!.addPostFrameCallback((_) => projectController.hasBeenUpdated = false);
   }
 }

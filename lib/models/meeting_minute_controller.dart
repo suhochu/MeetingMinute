@@ -2,22 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:meetingminutes52/components/constants.dart';
 import 'package:meetingminutes52/models/models.dart';
+import 'package:meetingminutes52/objectbox.g.dart';
+import 'package:objectbox/objectbox.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 
 class MeetingMinuteController extends GetxController {
+
   RxInt tapSelection = 0.obs;
   late MeetingMinute meetingMinute;
-
+  List<MeetingMinute> meetingMinuteList = [];
+  RxList<AgendaModel> meetingAgendasModel = <AgendaModel>[].obs;
 
   RxInt selectedProject = (-1).obs;
-  RxList<AgendaModel> meetingContentsModel = <AgendaModel>[].obs;
   RxString tempAgendaStatus = status[0].obs;
   RxString tempContentsIssuedBy = ''.obs;
   RxString tempTodoStatus = status[0].obs;
   RxString tempTodoResponsible = ''.obs;
   RxString tempTodoDueData = ''.obs;
+
   var selectedValues = <int>{}.obs;
   var updatedSelectedPeople = false.obs;
 
+  late Store _store;
+  Box<MeetingMinute>? projectBox;
+
+  bool hasBeenInitialized = false;
+  bool hasBeenUpdated = false;
+  bool notYetSaved = false;
+
+  final TextEditingController projectTeamCtrl = TextEditingController();
+  final TextEditingController meetingTitleCtrl = TextEditingController();
+  final TextEditingController meetingDateCtrl = TextEditingController();
+  final TextEditingController meetingPlaceCtrl = TextEditingController();
+  final TextEditingController meetingModeratorCtrl = TextEditingController();
+  final TextEditingController meetingSelectCtrl = TextEditingController();
+
+  final TextEditingController agendaController = TextEditingController();
+  final TextEditingController contentsController = TextEditingController();
+  final TextEditingController todoController = TextEditingController();
 
   final formKey = GlobalKey<FormState>();
 
@@ -29,11 +52,47 @@ class MeetingMinuteController extends GetxController {
         meetingTitle: '',
         meetingTime: '',
         meetingPlace: '',
-        meetingAttendants: '',
+        meetingAttendants: [],
         meetingModerator: '',
         meetings: '',
-        agendaList: meetingContentsModel,
         meetingMinuteId: calIdWithMakingTime());
+    meetingMinute.agendaList.clear();
+
+    getApplicationDocumentsDirectory().then((dir) {
+      try {
+        _store = Store(
+          getObjectBoxModel(),
+          directory: join(dir.path, 'meeting_Minute'),
+        );
+
+        projectBox = _store.box<MeetingMinute>();
+        hasBeenInitialized = true;
+      } catch (e) {
+        print(e);
+        hasBeenInitialized = false;
+      }
+      if (hasBeenInitialized) {
+        getApplicationDocumentsDirectory().then((dir) {
+          try {
+            _store = Store(
+              getObjectBoxModel(),
+              directory: join(dir.path, 'objectbox'),
+            );
+            projectBox = _store.box<MeetingMinute>();
+            hasBeenInitialized = true;
+          } catch (e) {
+            print(e);
+            hasBeenInitialized = false;
+          }
+          if (hasBeenInitialized) {
+            List<MeetingMinute> initialMeetingMinuteList = projectBox!.getAll();
+            if (initialMeetingMinuteList.isNotEmpty) {
+              meetingMinuteList = initialMeetingMinuteList;
+            }
+          }
+        });
+      }
+    });
   }
 
   String calIdWithMakingTime() {
@@ -47,65 +106,117 @@ class MeetingMinuteController extends GetxController {
     selectedValues(changedValues);
   }
 
-  void addingAgenda(String agendaString, String agendaStatus, String issuedTime) {
-    meetingContentsModel.add(
+  void attendantUpdate(List<String> list) {
+
+    List<String> tempSelectedList = [];
+    for(var i in selectedValues) {
+      tempSelectedList.add(list[i]);
+    }
+    meetingMinute.meetingAttendants.clear();
+    meetingMinute.meetingAttendants = tempSelectedList;
+  }
+
+  void addingAgenda(
+      String agendaString, String agendaStatus, String issuedTime) {
+    meetingAgendasModel.add(
       AgendaModel(
-          agendaID: meetingMinute.meetingMinuteId + '-' + (meetingMinute.agendaList.length + 1).toString(),
+          agendaID: meetingMinute.meetingMinuteId +
+              '-' +
+              (meetingMinute.agendaList.length + 1).toString(),
           agendaString: agendaString,
-          contentsModels: [],
-          todoModels: [],
           agendaStatus: agendaStatus,
           issuedTime: issuedTime),
     );
-    // meetingMinute.agendaModelCount++;
   }
 
-  void editingAgenda(int number, String agendaTitle, String issuedTime, String agendaStatus) {
-    meetingContentsModel[number] = meetingContentsModel[number]
-        .copyWith(agendaString: agendaTitle, issuedTime: issuedTime, agendaStatus: agendaStatus);
+  void editingAgenda(
+      int number, String agendaTitle, String issuedTime, String agendaStatus) {
+    meetingAgendasModel[number] = meetingAgendasModel[number].copyWith(
+        agendaString: agendaTitle,
+        issuedTime: issuedTime,
+        agendaStatus: agendaStatus);
   }
 
   void removingAgenda(int number) {
-    meetingContentsModel.removeAt(number);
+    meetingAgendasModel.removeAt(number);
+  }
+
+  void updateAgenda(){
+    meetingMinute.agendaList.clear();
+    meetingMinute.agendaList.addAll(meetingAgendasModel);
   }
 
   void addingContents(int number, ContentsModel content) {
-    AgendaModel dummyModel = meetingContentsModel[number];
+    AgendaModel dummyModel = meetingAgendasModel[number];
     dummyModel.contentsModels.add(content);
-    meetingContentsModel[number] = meetingContentsModel[number].copyWith(contentsModels: dummyModel.contentsModels);
-    // meetingContentsModel[number].contentCount++;
+    meetingAgendasModel[number] = dummyModel;
   }
 
   void editingContent(int number, int index, ContentsModel content) {
-    AgendaModel dummyModel = meetingContentsModel[number];
+    AgendaModel dummyModel = meetingAgendasModel[number];
     dummyModel.contentsModels[index] = content;
-    meetingContentsModel[number] = dummyModel;
+    meetingAgendasModel[number] = dummyModel;
   }
 
   void removingContents(int number, int index) {
-    AgendaModel dummyModel = meetingContentsModel[number];
+    AgendaModel dummyModel = meetingAgendasModel[number];
     dummyModel.contentsModels.removeAt(index);
-    meetingContentsModel[number] = dummyModel;
+    meetingAgendasModel[number] = dummyModel;
   }
 
   void addingTodo(int number, TodoModel todo) {
-    AgendaModel dummyModel = meetingContentsModel[number];
+    AgendaModel dummyModel = meetingAgendasModel[number];
     dummyModel.todoModels.add(todo);
-    meetingContentsModel[number] = meetingContentsModel[number].copyWith(
-      todoModels: dummyModel.todoModels,
-    );
-    // meetingContentsModel[number].todoCount++;
+    meetingAgendasModel[number] = dummyModel;
   }
 
   void editingTodos(int number, int index, TodoModel todo) {
-    AgendaModel dummyModel = meetingContentsModel[number];
+    AgendaModel dummyModel = meetingAgendasModel[number];
     dummyModel.todoModels[index] = todo;
-    meetingContentsModel[number] = dummyModel;
+    meetingAgendasModel[number] = dummyModel;
   }
 
   void removingTodos(int number, int index) {
-    AgendaModel dummyModel = meetingContentsModel[number];
+    AgendaModel dummyModel = meetingAgendasModel[number];
     dummyModel.todoModels.removeAt(index);
-    meetingContentsModel[number] = dummyModel;
+    meetingAgendasModel[number] = dummyModel;
   }
+
+  void saveToDB() {
+    int id = projectBox!.put(meetingMinute);
+    print('id is $id');
+    hasBeenUpdated = false;
+  }
+
+  List<MeetingMinute> openMeetingMinute(){
+    List<MeetingMinute> meetingMinutes = projectBox!.getAll();
+    print('Length of meetingminute is ${meetingMinutes.length}');
+    if(meetingMinutes.isNotEmpty){
+      return meetingMinutes;
+    }
+    return [];
+  }
+
+  void showDB() {
+
+    List<MeetingMinute> temp = projectBox!.getAll();
+    print(temp.length);
+    for (int i = 0; i < temp.length; i++) {
+
+      print('meetingMinuteId is : ${temp[i].meetingMinuteId}');
+      print('projectName is : ${temp[i].projectName}');
+      print('meetingTitle is : ${temp[i].meetingTitle}');
+      print('meetingTime is : ${temp[i].meetingTime}');
+      print('meetingPlace is : ${temp[i].meetingPlace}');
+      print('meetingAttendants is : ${temp[i].meetingAttendants}');
+      print('meetingModerator is : ${temp[i].meetingModerator}');
+      print('meetings is : ${temp[i].meetings}');
+    }
+  }
+
+  void selectedMeetingMinute(int id) {
+    MeetingMinute? selectedMeetingMinute = projectBox!.get(id);
+    print(selectedMeetingMinute!.id);
+  }
+
 }

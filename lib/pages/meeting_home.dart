@@ -5,6 +5,7 @@ import 'package:meetingminutes52/models/meeting_minute_controller.dart';
 import 'package:meetingminutes52/pages/drawer_page.dart';
 import 'package:meetingminutes52/pages/meeting_contents_page.dart';
 import 'package:meetingminutes52/pages/meeting_minute_page.dart';
+import 'package:meetingminutes52/pages/meeting_open.dart';
 
 class MeetingHomePage extends GetView<MeetingMinuteController> {
   final List<String> _appBarTitle = ['기본 정보', '회의 내용', '해야 할일'];
@@ -21,6 +22,11 @@ class MeetingHomePage extends GetView<MeetingMinuteController> {
         drawer: meetingMinuteDrawer(),
         body: meetingMinuteBody(),
         bottomNavigationBar: meetingBottomNavi(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: (){
+            controller.showDB();
+          },
+        ),
       ),
     );
   }
@@ -38,12 +44,17 @@ class MeetingHomePage extends GetView<MeetingMinuteController> {
           onPressed: () {},
         ),
         IconButton(
-          icon: const Icon(Icons.file_upload),
-          onPressed: () {},
+          icon: const Icon(Icons.launch),
+          onPressed: () {
+            Get.to(const MeetingOpen());
+          },
         ),
         IconButton(
           icon: const Icon(Icons.save),
-          onPressed: () {},
+          onPressed: () {
+            controller.updateAgenda();
+            controller.saveToDB();
+          },
         ),
       ],
       elevation: 0,

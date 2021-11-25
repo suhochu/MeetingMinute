@@ -11,9 +11,9 @@ import 'package:meetingminutes52/theme/color_style.dart';
 import 'package:meetingminutes52/theme/text_style.dart';
 
 class MeetingContentsPage extends GetView<MeetingMinuteController> {
-  final TextEditingController _agendaController = TextEditingController();
-  final TextEditingController _contentsController = TextEditingController();
-  final TextEditingController _todoController = TextEditingController();
+  // final TextEditingController _agendaController = TextEditingController();
+  // final TextEditingController _contentsController = TextEditingController();
+  // final TextEditingController _todoController = TextEditingController();
 
 
   MeetingContentsPage({Key? key}) : super(key: key);
@@ -39,9 +39,9 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   List<Widget> _agendaListBuilder(BuildContext ctx) {
     List<Widget> cardList = [];
     cardList = List.generate(
-      controller.meetingContentsModel.length + 1,
+      controller.meetingAgendasModel.length + 1,
       (index) {
-        if (index == controller.meetingContentsModel.length) {
+        if (index == controller.meetingAgendasModel.length) {
           return GestureDetector(
             child: addingButtonWidget('아젠다 추가'),
             onTap: () => _addingAgendaMethod(index), //Adding Contents
@@ -56,7 +56,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   ExpansionTile _agendaExpansion(BuildContext ctx, int index) {
-    var agenda = controller.meetingContentsModel[index];
+    var agenda = controller.meetingAgendasModel[index];
     return ExpansionTile(
       childrenPadding: const EdgeInsets.symmetric(vertical: 5),
       title: agendaCardWidget(
@@ -130,8 +130,8 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   void _addingAgendaMethod(int index) {
-    _agendaController.clear();
-    String agendaId = controller.meetingMinute.meetingMinuteId + '-' + (controller.meetingMinute.agendaList.length + 1).toString();
+    controller.agendaController.clear();
+    String agendaId = controller.meetingMinute.meetingMinuteId + '-' + (controller.meetingAgendasModel.length + 1).toString();
 
     Get.bottomSheet(
       SingleChildScrollView(
@@ -154,14 +154,14 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
               ])),
               BottomSheetAgendaStatusWidget(number: -1),
               Text('Agenda : ', style: bottomSheetSubTitleTextStyle()),
-              bottomSheetTextField(_agendaController, '아젠다 #${index + 1} 를 입력하세요', null, 1, 40),
+              bottomSheetTextField(controller.agendaController, '아젠다 #${index + 1} 를 입력하세요', null, 1, 40),
               completeButton(
                 () {
-                  if (_agendaController.text != '') {
+                  if (controller.agendaController.text != '') {
                     controller.addingAgenda(
-                        _agendaController.text, controller.tempAgendaStatus.toString(), currentTime(false));
+                        controller.agendaController.text, controller.tempAgendaStatus.toString(), currentTime(false));
                   }
-                  _agendaController.clear();
+                  controller.agendaController.clear();
                   Get.back();
                 },
               ),
@@ -184,8 +184,8 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   void _editingAgendaMethod(int index) {
-    var agenda = controller.meetingContentsModel[index];
-    _agendaController.text = agenda.agendaString;
+    var agenda = controller.meetingAgendasModel[index];
+    controller.agendaController.text = agenda.agendaString;
     Get.bottomSheet(
       SingleChildScrollView(
         child: Padding(
@@ -214,7 +214,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.0),
                 child: TextField(
-                  controller: _agendaController,
+                  controller: controller.agendaController,
                   textDirection: TextDirection.ltr,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
@@ -238,12 +238,12 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
               const SizedBox(height: 20),
               completeButton(
                 () {
-                  if (_agendaController.text != agenda.agendaString ||
+                  if (controller.agendaController.text != agenda.agendaString ||
                       controller.tempAgendaStatus.toString() != agenda.agendaStatus) {
                     controller.editingAgenda(
-                        index, _agendaController.text, currentTime(false), controller.tempAgendaStatus.toString());
+                        index, controller.agendaController.text, currentTime(false), controller.tempAgendaStatus.toString());
                   }
-                  _agendaController.clear();
+                  controller.agendaController.clear();
                   Get.back();
                 },
               ),
@@ -268,7 +268,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
     return await Get.defaultDialog<bool>(
       title: '아젠다 지움 확인',
       titleStyle: const TextStyle(fontWeight: FontWeight.bold),
-      middleText: '"${controller.meetingContentsModel[index].agendaString}"를 삭제 합니까?',
+      middleText: '"${controller.meetingAgendasModel[index].agendaString}"를 삭제 합니까?',
       backgroundColor: const Color(0xff795548),
       textCancel: '아니오',
       textConfirm: '예',
@@ -280,7 +280,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   List<Widget> _contentsExpansions(int number) {
-    var contents = controller.meetingContentsModel[number].contentsModels;
+    var contents = controller.meetingAgendasModel[number].contentsModels;
     List<Widget> contentsList = List.generate(contents.length, (index) {
       return GestureDetector(
           onTap: () {
@@ -354,8 +354,8 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   void _addingContentsMethod(int number) {
-    _contentsController.clear();
-    var agenda = controller.meetingContentsModel[number];
+    controller.contentsController.clear();
+    var agenda = controller.meetingAgendasModel[number];
     String contentsId = agenda.agendaID + '-' + 'CT' + (agenda.contentsModels.length + 1).toString();
 
     Get.bottomSheet(
@@ -389,18 +389,18 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                 index: -1,
               ),
               Text('Content : ', style: bottomSheetSubTitleTextStyle()),
-              bottomSheetTextField(_contentsController, '새로운 컨텐츠를 입력하세요', null, 2, 100),
+              bottomSheetTextField(controller.contentsController, '새로운 컨텐츠를 입력하세요', null, 2, 100),
               const SizedBox(height: 20),
               completeButton(
                 () {
-                  if (_contentsController.text != '') {
+                  if (controller.contentsController.text != '') {
                     model.ContentsModel content = model.ContentsModel(
                         contentsID: contentsId,
-                        contentsString: _contentsController.text,
+                        contentsString: controller.contentsController.text,
                         issuedBy: controller.tempContentsIssuedBy.toString(),
                         issuedDate: currentTime(false));
                     controller.addingContents(number, content);
-                    _contentsController.clear();
+                    controller.contentsController.clear();
                   }
                   Get.back();
                 },
@@ -424,8 +424,8 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   void _editingContentsMethod(int number, int index) {
-    _contentsController.text = controller.meetingContentsModel[number].contentsModels[index].contentsString;
-    var editingContent = controller.meetingContentsModel[number].contentsModels[index];
+    controller.contentsController.text = controller.meetingAgendasModel[number].contentsModels[index].contentsString;
+    var editingContent = controller.meetingAgendasModel[number].contentsModels[index];
 
     Get.bottomSheet(
       SingleChildScrollView(
@@ -459,23 +459,23 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                 index: index,
               ),
               Text('Content : ', style: bottomSheetSubTitleTextStyle()),
-              bottomSheetTextField(_contentsController, '컨텐츠를 입력하세요', null, 2, 100),
+              bottomSheetTextField(controller.contentsController, '컨텐츠를 입력하세요', null, 2, 100),
               const SizedBox(
                 height: 20,
               ),
               completeButton(
                 () {
-                  if (_contentsController.text != '' ||
+                  if (controller.contentsController.text != '' ||
                       controller.tempContentsIssuedBy.toString() != editingContent.issuedBy) {
                     model.ContentsModel content = model.ContentsModel(
                       contentsID: editingContent.contentsID,
-                      contentsString: _contentsController.text,
+                      contentsString: controller.contentsController.text,
                       issuedDate: currentTime(false),
                       issuedBy: controller.tempContentsIssuedBy.toString(),
                     );
                     controller.editingContent(number, index, content);
                   }
-                  _contentsController.clear();
+                  controller.contentsController.clear();
                   Get.back();
                 },
               ),
@@ -501,7 +501,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
     return await Get.defaultDialog<bool>(
       title: '컨텐츠 지움 확인',
       titleStyle: const TextStyle(fontWeight: FontWeight.bold),
-      middleText: '"${controller.meetingContentsModel[number].contentsModels[index].contentsString}"를 삭제 합니까?',
+      middleText: '"${controller.meetingAgendasModel[number].contentsModels[index].contentsString}"를 삭제 합니까?',
       backgroundColor: const Color(0xff795548),
       textCancel: '아니오',
       textConfirm: '예',
@@ -513,7 +513,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   List<Widget> _todoExpansions(BuildContext ctx, int number) {
-    var todos = controller.meetingContentsModel[number].todoModels;
+    var todos = controller.meetingAgendasModel[number].todoModels;
     List<Widget> todoList = List.generate(todos.length, (index) {
       return GestureDetector(
           onTap: () {
@@ -547,7 +547,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          controller.meetingContentsModel[number].todoModels[index].todoString,
+                          controller.meetingAgendasModel[number].todoModels[index].todoString,
                           textAlign: TextAlign.left,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(fontSize: 16),
@@ -586,9 +586,9 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   void _addingTodosMethod(BuildContext ctx, int number) {
-    _todoController.clear();
+    controller.todoController.clear();
     controller.tempTodoDueData.value = '';
-    var todos = controller.meetingContentsModel[number];
+    var todos = controller.meetingAgendasModel[number];
     String todoId = todos.agendaID + '-' + 'TD' + (todos.todoModels.length + 1).toString();
 
     Get.bottomSheet(
@@ -627,15 +627,15 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                 index: -1,
               ),
               Text('Todo : ', style: bottomSheetSubTitleTextStyle()),
-              bottomSheetTextField(_todoController, '신규 Todo 를 입력하세요', null, 2, 100),
+              bottomSheetTextField(controller.todoController, '신규 Todo 를 입력하세요', null, 2, 100),
               const SizedBox(height: 20),
               completeButton(
                 () {
                   // dueDateStringToInt(controller.tempTodoDueData.toString());
-                  if (_todoController.text != '') {
+                  if (controller.todoController.text != '') {
                     model.TodoModel todo = model.TodoModel(
                       todoID: todoId,
-                      todoString: _todoController.text,
+                      todoString: controller.todoController.text,
                       issuedTime: currentTime(false),
                       responsible: controller.tempTodoResponsible.toString(),
                       dueDate: controller.tempTodoDueData.toString(),
@@ -643,7 +643,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                       intDueDate: dueDateStringToInt(controller.tempTodoDueData.toString()),
                     );
                     controller.addingTodo(number, todo);
-                    _todoController.clear();
+                    controller.todoController.clear();
                   }
                   Get.back();
                 },
@@ -667,8 +667,8 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
   }
 
   void _editingTodosMethod(BuildContext ctx, int number, int index) {
-    _todoController.text = controller.meetingContentsModel[number].todoModels[index].todoString;
-    var todos = controller.meetingContentsModel[number].todoModels[index];
+    controller.todoController.text = controller.meetingAgendasModel[number].todoModels[index].todoString;
+    var todos = controller.meetingAgendasModel[number].todoModels[index];
     controller.tempTodoDueData.value = '';
     if (todos.dueDate != '') {
       controller.tempTodoDueData.value = todos.dueDate;
@@ -711,7 +711,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                   index: index,
                 ),
                 Text('Todo : ', style: bottomSheetSubTitleTextStyle()),
-                bottomSheetTextField(_todoController, 'Todo 를 입력하세요', null, 2, 100),
+                bottomSheetTextField(controller.todoController, 'Todo 를 입력하세요', null, 2, 100),
                 const SizedBox(height: 20),
                 completeButton(() {
                   //수정에 대한 조건문 작성 필요
@@ -721,11 +721,11 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
                     responsible: controller.tempTodoResponsible.toString(),
                     dueDate: controller.tempTodoDueData.toString(),
                     todoStatus: controller.tempTodoStatus.toString(),
-                    todoString: _todoController.text,
+                    todoString: controller.todoController.text,
                     intDueDate: dueDateStringToInt(controller.tempTodoDueData.toString()),
                   );
                   controller.editingTodos(number, index, todo);
-                  _todoController.clear();
+                  controller.todoController.clear();
                   Get.back();
                 }),
                 const SizedBox(height: 20),
@@ -750,7 +750,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
     return await Get.defaultDialog<bool>(
       title: 'Todo 지움 확인',
       titleStyle: const TextStyle(fontWeight: FontWeight.bold),
-      middleText: '"${controller.meetingContentsModel[number].todoModels[index].todoString}"를 삭제 합니까?',
+      middleText: '"${controller.meetingAgendasModel[number].todoModels[index].todoString}"를 삭제 합니까?',
       backgroundColor: const Color(0xff795548),
       textCancel: '아니오',
       textConfirm: '예',

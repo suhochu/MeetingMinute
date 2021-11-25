@@ -1,6 +1,9 @@
-class MeetingMinute {
+import 'package:objectbox/objectbox.dart';
 
+@Entity()
+class MeetingMinute {
   MeetingMinute({
+    this.id = 0,
     required this.projectName,
     required this.meetingMinuteId,
     required this.meetingTitle,
@@ -9,71 +12,86 @@ class MeetingMinute {
     required this.meetingAttendants,
     required this.meetingModerator,
     required this.meetings,
-    required this.agendaList,
   });
 
+  int id;
   String meetingMinuteId;
   String projectName;
   String meetingTitle;
   String meetingTime;
   String meetingPlace;
-  String meetingAttendants;
+  List<String> meetingAttendants;
   String meetingModerator;
   String meetings;
-  List<AgendaModel> agendaList = [];
+
+  @Backlink()
+  final agendaList = ToMany<AgendaModel>();
+
+  String? jsonAgendaModel;
 }
 
+@Entity()
 class AgendaModel {
   AgendaModel(
-      {required this.agendaID,
+      {this.id = 0,
+      required this.agendaID,
       required this.agendaString,
-      required this.contentsModels,
-      required this.todoModels,
       required this.agendaStatus,
       required this.issuedTime});
+
+  int id;
 
   String agendaID = '';
   String agendaStatus = '';
   String issuedTime = '';
   String agendaString = '';
-  List<ContentsModel> contentsModels = [];
-  List<TodoModel> todoModels = [];
+
+  final meetingMinute = ToOne<MeetingMinute>();
+
+  @Backlink()
+  final contentsModels = ToMany<ContentsModel>();
+
+  @Backlink()
+  final todoModels = ToMany<TodoModel>();
 
   AgendaModel copyWith({
     String? agendaID,
     String? issuedTime,
     String? agendaString,
-    List<ContentsModel>? contentsModels,
-    List<TodoModel>? todoModels,
     String? agendaStatus,
   }) {
     return AgendaModel(
       agendaID: agendaID ?? this.agendaID,
       issuedTime: issuedTime ?? this.issuedTime,
       agendaString: agendaString ?? this.agendaString,
-      contentsModels: contentsModels ?? this.contentsModels,
-      todoModels: todoModels ?? this.todoModels,
       agendaStatus: agendaStatus ?? this.agendaStatus,
     );
   }
 }
 
+@Entity()
 class ContentsModel {
   ContentsModel({
+    this.id = 0,
     required this.contentsID,
     required this.contentsString,
     required this.issuedBy,
     required this.issuedDate,
   });
 
+  int id;
   String contentsID = '';
   String contentsString = '';
   String issuedBy;
   String issuedDate;
+
+  final agendaModel = ToOne<AgendaModel>();
 }
 
+@Entity()
 class TodoModel {
   TodoModel({
+    this.id = 0,
     required this.todoID,
     required this.todoString,
     required this.issuedTime,
@@ -83,6 +101,7 @@ class TodoModel {
     required this.intDueDate,
   });
 
+  int id;
   String todoID = '';
   String todoString = '';
   String issuedTime = '';
@@ -90,4 +109,6 @@ class TodoModel {
   String responsible = '';
   String todoStatus = '';
   int intDueDate = 0;
+
+  final agendaModel = ToOne<AgendaModel>();
 }

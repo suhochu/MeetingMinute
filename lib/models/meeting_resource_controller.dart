@@ -21,7 +21,7 @@ class MeetingSourceController extends GetxController {
       try {
         _store = Store(
           getObjectBoxModel(),
-          directory: join(dir.path, 'objectbox'),
+          directory: join(dir.path, 'meeting_Resource'),
         );
 
         projectBox = _store.box<ProjectModel>();

@@ -60,7 +60,7 @@ class BottomSheetAgendaStatusWidget extends GetView<MeetingMinuteController> {
     if (number == -1) {
       controller.tempAgendaStatus.value = constants.status[0];
     } else {
-      controller.tempAgendaStatus.value = controller.meetingContentsModel[number].agendaStatus;
+      controller.tempAgendaStatus.value = controller.meetingAgendasModel[number].agendaStatus;
     }
 
     return Row(
@@ -106,7 +106,7 @@ class BottomSheetContentsIssuedByWidget extends GetView<MeetingMinuteController>
     if (number == -1) {
       controller.tempContentsIssuedBy.value = '';
     } else {
-      controller.tempContentsIssuedBy.value = controller.meetingContentsModel[number].contentsModels[index].issuedBy;
+      controller.tempContentsIssuedBy.value = controller.meetingAgendasModel[number].contentsModels[index].issuedBy;
     }
 
     return Row(
@@ -158,7 +158,7 @@ class BottomSheetTodoResponsibleWidget extends GetView<MeetingMinuteController> 
     if (number == -1) {
       controller.tempTodoResponsible.value = '';
     } else {
-      controller.tempTodoResponsible.value = controller.meetingContentsModel[number].todoModels[index].responsible;
+      controller.tempTodoResponsible.value = controller.meetingAgendasModel[number].todoModels[index].responsible;
     }
 
     return Row(
@@ -205,7 +205,7 @@ class BottomSheetTodoEditingWidget extends GetView<MeetingMinuteController> {
     if (number == -1) {
       controller.tempTodoStatus.value = constants.status[0];
     } else {
-      controller.tempTodoStatus.value = controller.meetingContentsModel[number].todoModels[index].todoStatus;
+      controller.tempTodoStatus.value = controller.meetingAgendasModel[number].todoModels[index].todoStatus;
     }
 
     return Row(

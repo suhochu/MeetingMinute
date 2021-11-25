@@ -98,13 +98,10 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
 void showMultiSelect(BuildContext ctx, List<String> list) async {
   var controller = Get.put<MeetingMinuteController>(MeetingMinuteController());
 
-  Set<int> dummySelectedValues = <int>{};
-
   var selectedItem = await showDialog(
     context: ctx,
     builder: (context) {
       return MultiSelectDialog(
-
         title: 'Select Item(s)',
         items: items(list),
         initialSelectedValues: controller.selectedValues,
@@ -112,13 +109,13 @@ void showMultiSelect(BuildContext ctx, List<String> list) async {
     },
   );
 
-  if(selectedItem != null) {
-    dummySelectedValues = selectedItem;
-    controller.editingSelectedValues(dummySelectedValues);
+  if (selectedItem != null) {
+    controller.editingSelectedValues(selectedItem);
+    controller.attendantUpdate(list);
   }
 }
 
 List<MultiSelectDialogItem> items(List<String> list) {
-
-  return List.generate(list.length,
-    (index) => MultiSelectDialogItem(index, list[index]));}
+  return List.generate(
+      list.length, (index) => MultiSelectDialogItem(index, list[index]));
+}

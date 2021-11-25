@@ -26,7 +26,9 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
       appBar: AppBar(
         backgroundColor: const Color(0xff795548),
         title: const Text('회의 자원 관리'),
-        leading: IconButton(
+        leading: first ? Container(
+          width: 10,
+        ) : IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () async {
             await saveProject();
@@ -91,11 +93,7 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
                   child: Obx(() => Column(
                         children: _projectListBuild(context),
                       ))))),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          controller.showDB();
-        },
-      ),
+
     );
   }
 
