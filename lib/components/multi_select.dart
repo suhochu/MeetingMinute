@@ -26,7 +26,7 @@ class MultiSelectDialog extends StatefulWidget {
 }
 
 class _MultiSelectDialogState extends State<MultiSelectDialog> {
-  final Set<int> _selectedValue = Set();
+  final Set<int> _selectedValue = {};
 
   @override
   void initState() {
@@ -95,7 +95,7 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
   }
 }
 
-void showMultiSelect(BuildContext ctx, List<String> list) async {
+void showMultiSelect(BuildContext ctx) async {
   var controller = Get.put<MeetingMinuteController>(MeetingMinuteController());
 
   var selectedItem = await showDialog(
@@ -103,7 +103,7 @@ void showMultiSelect(BuildContext ctx, List<String> list) async {
     builder: (context) {
       return MultiSelectDialog(
         title: 'Select Item(s)',
-        items: items(list),
+        items: items(controller.peopleList),
         initialSelectedValues: controller.selectedValues,
       );
     },
@@ -111,7 +111,8 @@ void showMultiSelect(BuildContext ctx, List<String> list) async {
 
   if (selectedItem != null) {
     controller.editingSelectedValues(selectedItem);
-    controller.attendantUpdate(list);
+    print('selected Values are : ${controller.selectedValues}');
+    controller.attendantUpdate();
   }
 }
 

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:meetingminutes52/models/meeting_minute_controller.dart';
 import 'package:meetingminutes52/models/meeting_resource_controller.dart';
 
 class ProfileWidget extends StatelessWidget {
@@ -108,6 +109,7 @@ class ButtonWidget extends StatelessWidget {
 class NumbersWidget extends StatelessWidget {
   NumbersWidget({Key? key}) : super(key: key);
   final controller = Get.put(MeetingSourceController());
+  final meetingMinuteController = Get.put(MeetingMinuteController());
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +120,7 @@ class NumbersWidget extends StatelessWidget {
         buildDivider(),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: buildButton(context, '35', 'Meeting Minutes'),
+          child: buildButton(context, meetingMinuteController.meetingMinuteList.length.toString(), 'Meeting Minutes'),
         ),
         buildDivider(),
         buildButton(context, '50', 'Todos'),

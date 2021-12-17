@@ -6,11 +6,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:meetingminutes52/components/buttons.dart';
 import 'package:meetingminutes52/components/profile_widget.dart';
 import 'package:meetingminutes52/components/textfield_style.dart';
+import 'package:meetingminutes52/models/meeting_minute_controller.dart';
 import 'package:meetingminutes52/models/user_controller.dart';
 import 'package:meetingminutes52/theme/text_style.dart';
 import 'package:image_cropper/image_cropper.dart';
 
 class ProfilePage extends GetView<UserController> {
+
   double heightUnit = (Get.size.height) / 20;
   bool isEdit = false;
   final TextEditingController _userNameCtrl = TextEditingController();

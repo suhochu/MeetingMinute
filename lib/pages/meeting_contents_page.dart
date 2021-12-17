@@ -11,10 +11,6 @@ import 'package:meetingminutes52/theme/color_style.dart';
 import 'package:meetingminutes52/theme/text_style.dart';
 
 class MeetingContentsPage extends GetView<MeetingMinuteController> {
-  // final TextEditingController _agendaController = TextEditingController();
-  // final TextEditingController _contentsController = TextEditingController();
-  // final TextEditingController _todoController = TextEditingController();
-
 
   MeetingContentsPage({Key? key}) : super(key: key);
 
@@ -131,7 +127,8 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
 
   void _addingAgendaMethod(int index) {
     controller.agendaController.clear();
-    String agendaId = controller.meetingMinute.meetingMinuteId + '-' + (controller.meetingAgendasModel.length + 1).toString();
+    // String agendaId = controller.meetingMinute.meetingMinuteId + '-' + (controller.meetingAgendasModel.length + 1).toString();
+    String agendaId = controller.meetingMinuteId + '-' + (controller.meetingAgendasModel.length + 1).toString();
 
     Get.bottomSheet(
       SingleChildScrollView(

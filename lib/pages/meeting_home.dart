@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:meetingminutes52/models/meeting_minute_controller.dart';
-
 import 'package:meetingminutes52/pages/drawer_page.dart';
 import 'package:meetingminutes52/pages/meeting_contents_page.dart';
 import 'package:meetingminutes52/pages/meeting_minute_page.dart';
 import 'package:meetingminutes52/pages/meeting_open.dart';
 
 class MeetingHomePage extends GetView<MeetingMinuteController> {
-  final List<String> _appBarTitle = ['기본 정보', '회의 내용', '해야 할일'];
+  final List<String> _appBarTitle = ['기본 정보', '회의 내용'];
   final List<Widget> _selectedBody = [
     MeetingMinutePage(),
     MeetingContentsPage(),
@@ -16,17 +15,13 @@ class MeetingHomePage extends GetView<MeetingMinuteController> {
 
   @override
   Widget build(BuildContext context) {
+
     return Obx(
       () => Scaffold(
         appBar: meetingMinutePageAppBar(),
         drawer: meetingMinuteDrawer(),
         body: meetingMinuteBody(),
         bottomNavigationBar: meetingBottomNavi(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: (){
-            controller.showDB();
-          },
-        ),
       ),
     );
   }
@@ -37,31 +32,63 @@ class MeetingHomePage extends GetView<MeetingMinuteController> {
       actions: [
         IconButton(
           icon: const Icon(Icons.add),
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: const Icon(Icons.link),
-          onPressed: () {},
+          onPressed: () async {
+            bool isConfirmed = false;
+            await Get.defaultDialog(
+              content: const Text('새 회의록을 작성 합니까?'),
+              title: '알림',
+              textConfirm: '작성',
+              onConfirm: () {
+                isConfirmed = true;
+                Get.back();
+              },
+              textCancel: '취소',
+              onCancel: () {
+                isConfirmed = false;
+              },
+            );
+            if (isConfirmed) {
+              controller.screenClear();
+              controller.createNewMeetingMinute();
+            }
+          },
         ),
         IconButton(
           icon: const Icon(Icons.launch),
           onPressed: () {
-            Get.to(const MeetingOpen());
+            Get.to(MeetingOpen());
           },
         ),
         IconButton(
-          icon: const Icon(Icons.save),
-          onPressed: () {
-            controller.updateAgenda();
-            controller.saveToDB();
-          },
-        ),
+            icon: const Icon(Icons.save),
+            onPressed: () async {
+              bool isConfirmed = false;
+              await Get.defaultDialog(
+                content: const Text('회의록을 저장 합니까?'),
+                title: '알림',
+                textConfirm: '저장',
+                onConfirm: () {
+                  isConfirmed = true;
+                  Get.back();
+                },
+                textCancel: '취소',
+                onCancel: () {
+                  isConfirmed = false;
+                },
+              );
+              if (isConfirmed) {
+                controller.saveToDB();
+              }
+            })
       ],
       elevation: 0,
       backgroundColor: Colors.transparent,
       title: Text(
         _appBarTitle[controller.tapSelection.value],
-        style: const TextStyle(fontSize: 20, color: Color(0xff5D4037), fontWeight: FontWeight.bold),
+        style: const TextStyle(
+            fontSize: 20,
+            color: Color(0xff5D4037),
+            fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
       ),
       // centerTitle: true,

@@ -1,0 +1,357 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:6617148537054673531",
+      "lastPropertyId": "4:138256843623200872",
+      "name": "Meetings",
+      "properties": [
+        {
+          "id": "1:6771481246093288817",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7047051017792948151",
+          "name": "meetingName",
+          "type": 9
+        },
+        {
+          "id": "3:2230035124012970503",
+          "name": "meetingTiming",
+          "type": 9
+        },
+        {
+          "id": "4:138256843623200872",
+          "name": "projectId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "1:7884980372367702527",
+          "relationTarget": "ProjectModel"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:1302856442515993372",
+      "lastPropertyId": "5:715191776623778149",
+      "name": "People",
+      "properties": [
+        {
+          "id": "1:4079323626351883063",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5130057290381968069",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "3:5382942550820741709",
+          "name": "email",
+          "type": 9
+        },
+        {
+          "id": "4:3804397684441682782",
+          "name": "team",
+          "type": 9
+        },
+        {
+          "id": "5:715191776623778149",
+          "name": "projectId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "2:8650569263557110780",
+          "relationTarget": "ProjectModel"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:2202272483574327466",
+      "lastPropertyId": "4:5039734520460418230",
+      "name": "ProjectModel",
+      "properties": [
+        {
+          "id": "1:8617335805641470525",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:3555976596573392789",
+          "name": "projectName",
+          "type": 9
+        },
+        {
+          "id": "3:8731995218958043426",
+          "name": "teamName",
+          "type": 9
+        },
+        {
+          "id": "4:5039734520460418230",
+          "name": "meetingPlace",
+          "type": 30
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:4306379556159748548",
+      "lastPropertyId": "12:8216227820006502292",
+      "name": "MeetingMinute",
+      "properties": [
+        {
+          "id": "1:911416988448476704",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:3799132347568334134",
+          "name": "meetingMinuteId",
+          "type": 9
+        },
+        {
+          "id": "3:8216983543015200969",
+          "name": "projectName",
+          "type": 9
+        },
+        {
+          "id": "4:7255936402337720321",
+          "name": "meetingTitle",
+          "type": 9
+        },
+        {
+          "id": "5:6758771224635585184",
+          "name": "meetingTime",
+          "type": 9
+        },
+        {
+          "id": "6:9068586205103165428",
+          "name": "meetingPlace",
+          "type": 9
+        },
+        {
+          "id": "7:7361736814981615071",
+          "name": "meetingAttendants",
+          "type": 30
+        },
+        {
+          "id": "8:3281202027395359461",
+          "name": "meetingModerator",
+          "type": 9
+        },
+        {
+          "id": "9:6260927784488719451",
+          "name": "meetings",
+          "type": 9
+        },
+        {
+          "id": "11:2911978854328417807",
+          "name": "peopleList",
+          "type": 30
+        },
+        {
+          "id": "12:8216227820006502292",
+          "name": "selectedAttendantInt",
+          "type": 30
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:8309330724015831085",
+      "lastPropertyId": "5:4295992619937190959",
+      "name": "User",
+      "properties": [
+        {
+          "id": "1:1317175508844864921",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2739146769061531922",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "3:3380272189955533309",
+          "name": "password",
+          "type": 9
+        },
+        {
+          "id": "4:3492624052719435578",
+          "name": "email",
+          "type": 9
+        },
+        {
+          "id": "5:4295992619937190959",
+          "name": "imagePath",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "6:3208025670212046732",
+      "lastPropertyId": "6:3235445822835620930",
+      "name": "AgendaModel",
+      "properties": [
+        {
+          "id": "1:8680834265877062191",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5480477271106693442",
+          "name": "agendaID",
+          "type": 9
+        },
+        {
+          "id": "3:2806569546393840775",
+          "name": "agendaStatus",
+          "type": 9
+        },
+        {
+          "id": "4:6072458947920086728",
+          "name": "issuedTime",
+          "type": 9
+        },
+        {
+          "id": "5:8120484623728209518",
+          "name": "agendaString",
+          "type": 9
+        },
+        {
+          "id": "6:3235445822835620930",
+          "name": "meetingMinuteId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "3:1894002946807577369",
+          "relationTarget": "MeetingMinute"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "7:4080201189132424713",
+      "lastPropertyId": "6:6574570372885343081",
+      "name": "ContentsModel",
+      "properties": [
+        {
+          "id": "1:3980403979140751640",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7664830052598246407",
+          "name": "contentsID",
+          "type": 9
+        },
+        {
+          "id": "3:8118950058492031650",
+          "name": "contentsString",
+          "type": 9
+        },
+        {
+          "id": "4:2522374428913882980",
+          "name": "issuedBy",
+          "type": 9
+        },
+        {
+          "id": "5:9218305278267500476",
+          "name": "issuedDate",
+          "type": 9
+        },
+        {
+          "id": "6:6574570372885343081",
+          "name": "agendaModelId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "4:9003718766120766983",
+          "relationTarget": "AgendaModel"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "8:8273066848230542782",
+      "lastPropertyId": "9:7252690334617411166",
+      "name": "TodoModel",
+      "properties": [
+        {
+          "id": "1:8190208450730409",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5406436219138372423",
+          "name": "todoID",
+          "type": 9
+        },
+        {
+          "id": "3:6954505269142059034",
+          "name": "todoString",
+          "type": 9
+        },
+        {
+          "id": "4:5568951169598398744",
+          "name": "issuedTime",
+          "type": 9
+        },
+        {
+          "id": "5:3804523211827769853",
+          "name": "dueDate",
+          "type": 9
+        },
+        {
+          "id": "6:3989649022110392228",
+          "name": "responsible",
+          "type": 9
+        },
+        {
+          "id": "7:6619822177524408521",
+          "name": "todoStatus",
+          "type": 9
+        },
+        {
+          "id": "8:2329977911475069548",
+          "name": "intDueDate",
+          "type": 6
+        },
+        {
+          "id": "9:7252690334617411166",
+          "name": "agendaModelId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "5:4480038054985413531",
+          "relationTarget": "AgendaModel"
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "8:8273066848230542782",
+  "lastIndexId": "5:4480038054985413531",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [
+    2877214907635502003
+  ],
+  "retiredRelationUids": [],
+  "version": 1
+}

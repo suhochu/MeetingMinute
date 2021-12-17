@@ -12,22 +12,51 @@ class MeetingMinute {
     required this.meetingAttendants,
     required this.meetingModerator,
     required this.meetings,
+    required this.selectedAttendantInt,
+    required this.peopleList,
   });
 
   int id;
-  String meetingMinuteId;
-  String projectName;
-  String meetingTitle;
-  String meetingTime;
-  String meetingPlace;
-  List<String> meetingAttendants;
-  String meetingModerator;
-  String meetings;
+  String meetingMinuteId; //meetingMinuteId
+  String projectName; //projectTeamCtrl
+  String meetingTitle; //meetingTitleCtrl
+  String meetingTime; //meetingDateCtrl
+  String meetings; //meetingsCtrl
+  String meetingPlace; //meetingPlaceCtrl
+  String meetingModerator; //meetingModeratorCtrl
+  List<String> meetingAttendants; //meetingAttendants
+  List<String> selectedAttendantInt; //selectedAttendantInt
+  List<String> peopleList; //peopleList
+  String agendaListString = '';
 
   @Backlink()
-  final agendaList = ToMany<AgendaModel>();
+  var agendaList = ToMany<AgendaModel>();
 
-  String? jsonAgendaModel;
+  MeetingMinute copyWith({
+    String? meetingMinuteId,
+    String? projectName,
+    String? meetingTitle,
+    String? meetingTime,
+    String? meetingPlace,
+    String? meetingModerator,
+    String? meetings,
+    List<String>? meetingAttendants,
+    List<String>? selectedAttendantInt,
+    List<String>? peopleList,
+  }) {
+    return MeetingMinute(
+      meetingMinuteId: meetingMinuteId ?? this.meetingMinuteId,
+      projectName: projectName ?? this.projectName,
+      meetingTitle: meetingTitle ?? this.meetingTitle,
+      meetingTime: meetingTime ?? this.meetingTime,
+      meetingPlace: meetingPlace ?? this.meetingPlace,
+      meetingAttendants: meetingAttendants ?? this.meetingAttendants,
+      meetingModerator: meetingModerator ?? this.meetingModerator,
+      selectedAttendantInt: selectedAttendantInt ?? this.selectedAttendantInt,
+      peopleList: peopleList ?? this.peopleList,
+      meetings: meetings ?? this.meetings,
+    );
+  }
 }
 
 @Entity()
@@ -40,19 +69,35 @@ class AgendaModel {
       required this.issuedTime});
 
   int id;
-
   String agendaID = '';
   String agendaStatus = '';
   String issuedTime = '';
   String agendaString = '';
 
-  final meetingMinute = ToOne<MeetingMinute>();
+  var meetingMinute = ToOne<MeetingMinute>();
 
   @Backlink()
-  final contentsModels = ToMany<ContentsModel>();
+  var contentsModels = ToMany<ContentsModel>();
 
   @Backlink()
-  final todoModels = ToMany<TodoModel>();
+  var todoModels = ToMany<TodoModel>();
+
+  factory AgendaModel.fromJson(Map<String, dynamic> jsonData) {
+    return AgendaModel(
+        agendaID: jsonData['agendaID'],
+        agendaString: jsonData['agendaString'],
+        agendaStatus: jsonData['agendaStatus'],
+        issuedTime: jsonData['issuedTime']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return{
+      'agendaID' : agendaID,
+      'agendaString' : agendaStatus,
+      'agendaStatus' : issuedTime,
+      'issuedTime' : agendaString,
+    };
+  }
 
   AgendaModel copyWith({
     String? agendaID,
@@ -85,7 +130,27 @@ class ContentsModel {
   String issuedBy;
   String issuedDate;
 
-  final agendaModel = ToOne<AgendaModel>();
+  var agendaModel = ToOne<AgendaModel>();
+
+  factory ContentsModel.fromJson(Map<String, dynamic> jsonData){
+
+    return ContentsModel(
+        contentsID: jsonData['contentsID'],
+        contentsString: jsonData['contentsString'],
+        issuedBy: jsonData['issuedBy'],
+        issuedDate: jsonData['issuedDate'],
+    );
+
+  }
+
+  Map<String, dynamic> toJson() {
+    return{
+      'contentsID': contentsID,
+      'contentsString': contentsString,
+      'issuedBy': issuedBy,
+      'issuedDate': issuedDate,
+    };
+  }
 }
 
 @Entity()
@@ -110,5 +175,29 @@ class TodoModel {
   String todoStatus = '';
   int intDueDate = 0;
 
-  final agendaModel = ToOne<AgendaModel>();
+  var agendaModel = ToOne<AgendaModel>();
+
+  factory TodoModel.fromJson(Map<String, dynamic> jsonData){
+    return TodoModel(
+        todoID:jsonData['todoID'],
+        todoString:jsonData['todoString'],
+        issuedTime:jsonData['issuedTime'],
+        dueDate:jsonData['dueDate'],
+        responsible:jsonData['responsible'],
+        todoStatus:jsonData['todoStatus'],
+        intDueDate:jsonData['intDueDate'],
+    );
+  }
+
+  Map<String, dynamic> toJson(){
+    return {
+      'todoID' : todoID,
+      'todoString' : todoString,
+      'issuedTime' : issuedTime,
+      'dueDate' : dueDate,
+      'responsible' : responsible,
+      'todoStatus' : todoStatus,
+      'intDueDate' : intDueDate,
+    };
+  }
 }

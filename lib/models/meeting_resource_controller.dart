@@ -8,8 +8,10 @@ import 'package:path/path.dart';
 class MeetingSourceController extends GetxController {
   RxList<ProjectModel> projects = <ProjectModel>[].obs;
   List<String> projectTeamList = [];
+
   late Store _store;
   Box<ProjectModel>? projectBox;
+
   bool hasBeenInitialized = false;
   bool hasBeenUpdated = false;
   bool notYetSaved = false;
@@ -27,9 +29,9 @@ class MeetingSourceController extends GetxController {
         projectBox = _store.box<ProjectModel>();
         hasBeenInitialized = true;
       } catch (e) {
-        print(e);
+        Get.defaultDialog(middleText: '데이터를 읽어 오지 못했습니다.');
         hasBeenInitialized = false;
-      }
+      } // todo 이 코드를 테스트 해봐야 함
       if (hasBeenInitialized) {
         List<ProjectModel> initialProjectModelList = projectBox!.getAll();
       if (initialProjectModelList.isNotEmpty) {
