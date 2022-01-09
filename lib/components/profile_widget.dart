@@ -123,7 +123,7 @@ class NumbersWidget extends StatelessWidget {
           child: buildButton(context, meetingMinuteController.meetingMinuteList.length.toString(), 'Meeting Minutes'),
         ),
         buildDivider(),
-        buildButton(context, '50', 'Todos'),
+        buildButton(context, meetingMinuteController.countTodos().toString(), 'Todos'),
       ],);
   }
 

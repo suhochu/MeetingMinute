@@ -17,7 +17,6 @@ class ProfilePage extends GetView<UserController> {
   bool isEdit = false;
   final TextEditingController _userNameCtrl = TextEditingController();
   final TextEditingController _emailCtrl = TextEditingController();
-
   final picker = ImagePicker();
 
   @override

@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 import 'package:meetingminutes52/models/project_model.dart';
 import 'package:meetingminutes52/objectbox.g.dart';
-import 'package:objectbox/objectbox.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
+import 'package:flutter/material.dart';
 
 class MeetingSourceController extends GetxController {
   RxList<ProjectModel> projects = <ProjectModel>[].obs;
@@ -25,7 +25,6 @@ class MeetingSourceController extends GetxController {
           getObjectBoxModel(),
           directory: join(dir.path, 'meeting_Resource'),
         );
-
         projectBox = _store.box<ProjectModel>();
         hasBeenInitialized = true;
       } catch (e) {
@@ -34,10 +33,10 @@ class MeetingSourceController extends GetxController {
       } // todo 이 코드를 테스트 해봐야 함
       if (hasBeenInitialized) {
         List<ProjectModel> initialProjectModelList = projectBox!.getAll();
-      if (initialProjectModelList.isNotEmpty) {
-        projects.value = initialProjectModelList;
-        updateProjectNameStringList();
-      }
+        if (initialProjectModelList.isNotEmpty) {
+          projects.value = initialProjectModelList;
+          updateProjectNameStringList();
+        }
       }
     });
   }
@@ -147,30 +146,13 @@ class MeetingSourceController extends GetxController {
 
   void saveToDB() {
     List<int> id = projectBox!.putMany(projects);
-    print('id is $id');
     hasBeenUpdated = false;
+    Get.snackbar('알림', '저장 되었습니다.', backgroundColor: Colors.white, duration: const Duration(seconds: 1));
   }
 
   void deleteDB() {
     projectBox!.removeAll();
     projectTeamList.clear();
     projects.clear();
-  }
-
-  void showDB() {
-    List<ProjectModel> temp = projectBox!.getAll();
-    for (int i = 0; i < temp.length; i++) {
-      print('projectName is : ${temp[i].projectName}');
-      print('project Id is ${temp[i].id}');
-      for (int j = 0; j < temp[i].peoples.length; j++) {
-        print(temp[i].peoples[j].name);
-      }
-      for (int k = 0; k < temp[i].meetings.length; k++) {
-        print(temp[i].meetings[k].meetingName);
-      }
-      for (int l = 0; l < temp[i].meetingPlace.length; l++) {
-        print(temp[i].meetingPlace[l]);
-      }
-    }
   }
 }

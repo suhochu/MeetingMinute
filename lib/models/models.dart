@@ -14,6 +14,8 @@ class MeetingMinute {
     required this.meetings,
     required this.selectedAttendantInt,
     required this.peopleList,
+    required this.agendaListToString,
+    required this.todoCount,
   });
 
   int id;
@@ -27,75 +29,79 @@ class MeetingMinute {
   List<String> meetingAttendants; //meetingAttendants
   List<String> selectedAttendantInt; //selectedAttendantInt
   List<String> peopleList; //peopleList
-  String agendaListString = '';
-
-  @Backlink()
-  var agendaList = ToMany<AgendaModel>();
+  List<AgendaModel> agendaList = [];
+  List<String> agendaListToString = [];
+  int todoCount = 0;
 
   MeetingMinute copyWith({
     String? meetingMinuteId,
     String? projectName,
     String? meetingTitle,
     String? meetingTime,
+    String? meetings,
     String? meetingPlace,
     String? meetingModerator,
-    String? meetings,
     List<String>? meetingAttendants,
     List<String>? selectedAttendantInt,
     List<String>? peopleList,
+    List<String>? agendaListToString,
+    int? todoCount,
   }) {
     return MeetingMinute(
       meetingMinuteId: meetingMinuteId ?? this.meetingMinuteId,
       projectName: projectName ?? this.projectName,
       meetingTitle: meetingTitle ?? this.meetingTitle,
       meetingTime: meetingTime ?? this.meetingTime,
+      meetings: meetings ?? this.meetings,
       meetingPlace: meetingPlace ?? this.meetingPlace,
-      meetingAttendants: meetingAttendants ?? this.meetingAttendants,
       meetingModerator: meetingModerator ?? this.meetingModerator,
+      meetingAttendants: meetingAttendants ?? this.meetingAttendants,
       selectedAttendantInt: selectedAttendantInt ?? this.selectedAttendantInt,
       peopleList: peopleList ?? this.peopleList,
-      meetings: meetings ?? this.meetings,
+      agendaListToString: agendaListToString ?? this.agendaListToString,
+      todoCount: todoCount ?? this.todoCount,
     );
   }
 }
 
-@Entity()
 class AgendaModel {
   AgendaModel(
-      {this.id = 0,
+      {
       required this.agendaID,
       required this.agendaString,
       required this.agendaStatus,
-      required this.issuedTime});
+      required this.issuedTime,
+      required this.contentsModelsString,
+      required this.todoModelsString});
 
-  int id;
   String agendaID = '';
   String agendaStatus = '';
   String issuedTime = '';
   String agendaString = '';
-
-  var meetingMinute = ToOne<MeetingMinute>();
-
-  @Backlink()
-  var contentsModels = ToMany<ContentsModel>();
-
-  @Backlink()
-  var todoModels = ToMany<TodoModel>();
+  String contentsModelsString = '';
+  List<ContentsModel> contentsModels = [];
+  String todoModelsString = '';
+  List<TodoModel> todoModels = [];
 
   factory AgendaModel.fromJson(Map<String, dynamic> jsonData) {
     return AgendaModel(
         agendaID: jsonData['agendaID'],
         agendaString: jsonData['agendaString'],
         agendaStatus: jsonData['agendaStatus'],
-        issuedTime: jsonData['issuedTime']);
+        issuedTime: jsonData['issuedTime'],
+        contentsModelsString: jsonData['contentsList'] ?? '',
+        todoModelsString: jsonData['todosList'] ?? '');
+
   }
 
   Map<String, dynamic> toJson() {
     return{
       'agendaID' : agendaID,
-      'agendaString' : agendaStatus,
-      'agendaStatus' : issuedTime,
-      'issuedTime' : agendaString,
+      'agendaString' : agendaString,
+      'agendaStatus' : agendaStatus,
+      'issuedTime' : issuedTime,
+      'contentsList' : contentsModelsString,
+      'todosList' : todoModelsString,
     };
   }
 
@@ -104,33 +110,34 @@ class AgendaModel {
     String? issuedTime,
     String? agendaString,
     String? agendaStatus,
+    String? contentsModelsString,
+    String? todoModelsString,
   }) {
     return AgendaModel(
       agendaID: agendaID ?? this.agendaID,
       issuedTime: issuedTime ?? this.issuedTime,
       agendaString: agendaString ?? this.agendaString,
       agendaStatus: agendaStatus ?? this.agendaStatus,
+      contentsModelsString: contentsModelsString ?? this.contentsModelsString,
+      todoModelsString: todoModelsString ?? this.todoModelsString,
     );
   }
+
 }
 
-@Entity()
 class ContentsModel {
   ContentsModel({
-    this.id = 0,
     required this.contentsID,
     required this.contentsString,
     required this.issuedBy,
     required this.issuedDate,
   });
 
-  int id;
   String contentsID = '';
   String contentsString = '';
   String issuedBy;
   String issuedDate;
 
-  var agendaModel = ToOne<AgendaModel>();
 
   factory ContentsModel.fromJson(Map<String, dynamic> jsonData){
 
@@ -153,10 +160,8 @@ class ContentsModel {
   }
 }
 
-@Entity()
 class TodoModel {
   TodoModel({
-    this.id = 0,
     required this.todoID,
     required this.todoString,
     required this.issuedTime,
@@ -166,7 +171,6 @@ class TodoModel {
     required this.intDueDate,
   });
 
-  int id;
   String todoID = '';
   String todoString = '';
   String issuedTime = '';
@@ -174,8 +178,6 @@ class TodoModel {
   String responsible = '';
   String todoStatus = '';
   int intDueDate = 0;
-
-  var agendaModel = ToOne<AgendaModel>();
 
   factory TodoModel.fromJson(Map<String, dynamic> jsonData){
     return TodoModel(

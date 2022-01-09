@@ -238,13 +238,13 @@ class BottomSheetTodoEditingWidget extends GetView<MeetingMinuteController> {
   }
 }
 
-Widget completeButton(VoidCallback onPressed) {
+Widget completeButton(VoidCallback onPressed, {String content = '완료', Color color = const Color(0xffFF5722)}) {
   return Container(
     alignment: Alignment.center,
     child: ElevatedButton(
-      child: const Text('완료'),
+      child: Text(content),
       style: ElevatedButton.styleFrom(
-          primary: const Color(0xffFF5722),
+          primary: color,
           minimumSize: const Size(70, 35),
           textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
       onPressed: onPressed,

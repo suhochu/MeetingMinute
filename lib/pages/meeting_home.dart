@@ -15,7 +15,6 @@ class MeetingHomePage extends GetView<MeetingMinuteController> {
 
   @override
   Widget build(BuildContext context) {
-
     return Obx(
       () => Scaffold(
         appBar: meetingMinutePageAppBar(),
@@ -56,7 +55,7 @@ class MeetingHomePage extends GetView<MeetingMinuteController> {
         IconButton(
           icon: const Icon(Icons.launch),
           onPressed: () {
-            Get.to(MeetingOpen());
+            Get.to(MeetingOpen(id: controller.currentMeetingMinute.id));
           },
         ),
         IconButton(
@@ -77,7 +76,12 @@ class MeetingHomePage extends GetView<MeetingMinuteController> {
                 },
               );
               if (isConfirmed) {
-                controller.saveToDB();
+                controller.isValidation.value = true;
+                controller.updateIsSelectedValueEmpty();
+                if (controller.formKey.currentState!.validate()) {
+                  print('*****');
+                  controller.saveToDB();
+                }
               }
             })
       ],
@@ -85,10 +89,7 @@ class MeetingHomePage extends GetView<MeetingMinuteController> {
       backgroundColor: Colors.transparent,
       title: Text(
         _appBarTitle[controller.tapSelection.value],
-        style: const TextStyle(
-            fontSize: 20,
-            color: Color(0xff5D4037),
-            fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 20, color: Color(0xff5D4037), fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
       ),
       // centerTitle: true,

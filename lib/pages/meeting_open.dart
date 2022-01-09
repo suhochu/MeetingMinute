@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:meetingminutes52/models/meeting_minute_controller.dart';
-import 'package:meetingminutes52/models/models.dart';
 
 class MeetingOpen extends GetView<MeetingMinuteController> {
-  MeetingOpen({Key? key}) : super(key: key);
+  MeetingOpen({Key? key, required this.id}) : super(key: key);
 
+  int id;
   bool link = false;
 
   @override
@@ -29,10 +29,7 @@ class MeetingOpen extends GetView<MeetingMinuteController> {
             backgroundColor: Colors.transparent,
             title: const Text(
               'Meeting Minute Open',
-              style: TextStyle(
-                  fontSize: 20,
-                  color: Color(0xff5D4037),
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, color: Color(0xff5D4037), fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             actions: [
@@ -47,8 +44,7 @@ class MeetingOpen extends GetView<MeetingMinuteController> {
                       child: Checkbox(
                         value: controller.linkCheck.value,
                         onChanged: (bool? value) {
-                          controller.linkCheck.value =
-                              !controller.linkCheck.value;
+                          controller.linkCheck.value = !controller.linkCheck.value;
                         },
                       ),
                     ),
@@ -56,9 +52,7 @@ class MeetingOpen extends GetView<MeetingMinuteController> {
                       'Linking',
                       style: TextStyle(
                           fontSize: 12,
-                          color: controller.linkCheck.value
-                              ? Colors.deepOrangeAccent
-                              : const Color(0xff5D4037),
+                          color: controller.linkCheck.value ? Colors.deepOrangeAccent : const Color(0xff5D4037),
                           fontWeight: FontWeight.w400),
                     ),
                   ],
@@ -83,8 +77,7 @@ class MeetingOpen extends GetView<MeetingMinuteController> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            controller.selectedMeetingMinuteOpen(
-                                controller.meetingMinuteList[index].id);
+                            controller.selectedMeetingMinuteOpen(controller.meetingMinuteList[index].id);
                             controller.linkCheck.value = false;
                             Get.back();
                           },
@@ -104,9 +97,14 @@ class MeetingOpen extends GetView<MeetingMinuteController> {
                               },
                             );
                             if (isConfirmed) {
-                              controller.selectedMeetingMinuteDelete(
-                                  controller.meetingMinuteList[index].id);
-                              controller.openMeetingMinute();
+                              if (id == controller.meetingMinuteList[index].id) {
+                                await Get.defaultDialog(
+                                  content: const Text('이 회의록은 현재 선택된 회의록 입니다.'),
+                                );
+                              } else {
+                                controller.selectedMeetingMinuteDelete(controller.meetingMinuteList[index].id);
+                                controller.openMeetingMinute();
+                              }
                             }
                           },
                           child: Container(
@@ -116,43 +114,30 @@ class MeetingOpen extends GetView<MeetingMinuteController> {
                               child: Column(
                                 children: [
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      meetingMinuteOpenBox(
-                                          'ID : ',
-                                          controller.meetingMinuteList[index]
-                                              .meetingMinuteId),
-                                      meetingMinuteOpenBox('회의제목 : ',
-                                          controller.meetingMinuteList[index].meetingTitle),
+                                      meetingMinuteOpenBox('ID : ', controller.meetingMinuteList[index].meetingMinuteId),
+                                      meetingMinuteOpenBox('회의제목 : ', controller.meetingMinuteList[index].meetingTitle),
                                     ],
                                   ),
                                   const SizedBox(
                                     height: 10,
                                   ),
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      meetingMinuteOpenBox('PROJECT : ',
-                                          controller.meetingMinuteList[index].projectName),
-                                      meetingMinuteOpenBox('회의시간 : ',
-                                          controller.meetingMinuteList[index].meetingTime),
+                                      meetingMinuteOpenBox('PROJECT : ', controller.meetingMinuteList[index].projectName),
+                                      meetingMinuteOpenBox('회의시간 : ', controller.meetingMinuteList[index].meetingTime),
                                     ],
                                   ),
                                   const SizedBox(
                                     height: 10,
                                   ),
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      meetingMinuteOpenBox('회의종류 : ',
-                                          controller.meetingMinuteList[index].meetings),
-                                      meetingMinuteOpenBox(
-                                          '회의주관 : ',
-                                          controller.meetingMinuteList[index]
-                                              .meetingModerator),
+                                      meetingMinuteOpenBox('회의종류 : ', controller.meetingMinuteList[index].meetings),
+                                      meetingMinuteOpenBox('회의주관 : ', controller.meetingMinuteList[index].meetingModerator),
                                     ],
                                   ),
                                 ],
@@ -164,8 +149,7 @@ class MeetingOpen extends GetView<MeetingMinuteController> {
                                 width: 1.0,
                                 color: const Color(0xff5D4037),
                               ),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(10)),
+                              borderRadius: const BorderRadius.all(Radius.circular(10)),
                             ),
                           ),
                         ),

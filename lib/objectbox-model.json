@@ -103,7 +103,7 @@
     },
     {
       "id": "4:4306379556159748548",
-      "lastPropertyId": "12:8216227820006502292",
+      "lastPropertyId": "15:7719832104359070704",
       "name": "MeetingMinute",
       "properties": [
         {
@@ -161,6 +161,16 @@
           "id": "12:8216227820006502292",
           "name": "selectedAttendantInt",
           "type": 30
+        },
+        {
+          "id": "14:6308532272612352345",
+          "name": "agendaListToString",
+          "type": 30
+        },
+        {
+          "id": "15:7719832104359070704",
+          "name": "todoCount",
+          "type": 6
         }
       ],
       "relations": []
@@ -198,147 +208,6 @@
         }
       ],
       "relations": []
-    },
-    {
-      "id": "6:3208025670212046732",
-      "lastPropertyId": "6:3235445822835620930",
-      "name": "AgendaModel",
-      "properties": [
-        {
-          "id": "1:8680834265877062191",
-          "name": "id",
-          "type": 6,
-          "flags": 1
-        },
-        {
-          "id": "2:5480477271106693442",
-          "name": "agendaID",
-          "type": 9
-        },
-        {
-          "id": "3:2806569546393840775",
-          "name": "agendaStatus",
-          "type": 9
-        },
-        {
-          "id": "4:6072458947920086728",
-          "name": "issuedTime",
-          "type": 9
-        },
-        {
-          "id": "5:8120484623728209518",
-          "name": "agendaString",
-          "type": 9
-        },
-        {
-          "id": "6:3235445822835620930",
-          "name": "meetingMinuteId",
-          "type": 11,
-          "flags": 520,
-          "indexId": "3:1894002946807577369",
-          "relationTarget": "MeetingMinute"
-        }
-      ],
-      "relations": []
-    },
-    {
-      "id": "7:4080201189132424713",
-      "lastPropertyId": "6:6574570372885343081",
-      "name": "ContentsModel",
-      "properties": [
-        {
-          "id": "1:3980403979140751640",
-          "name": "id",
-          "type": 6,
-          "flags": 1
-        },
-        {
-          "id": "2:7664830052598246407",
-          "name": "contentsID",
-          "type": 9
-        },
-        {
-          "id": "3:8118950058492031650",
-          "name": "contentsString",
-          "type": 9
-        },
-        {
-          "id": "4:2522374428913882980",
-          "name": "issuedBy",
-          "type": 9
-        },
-        {
-          "id": "5:9218305278267500476",
-          "name": "issuedDate",
-          "type": 9
-        },
-        {
-          "id": "6:6574570372885343081",
-          "name": "agendaModelId",
-          "type": 11,
-          "flags": 520,
-          "indexId": "4:9003718766120766983",
-          "relationTarget": "AgendaModel"
-        }
-      ],
-      "relations": []
-    },
-    {
-      "id": "8:8273066848230542782",
-      "lastPropertyId": "9:7252690334617411166",
-      "name": "TodoModel",
-      "properties": [
-        {
-          "id": "1:8190208450730409",
-          "name": "id",
-          "type": 6,
-          "flags": 1
-        },
-        {
-          "id": "2:5406436219138372423",
-          "name": "todoID",
-          "type": 9
-        },
-        {
-          "id": "3:6954505269142059034",
-          "name": "todoString",
-          "type": 9
-        },
-        {
-          "id": "4:5568951169598398744",
-          "name": "issuedTime",
-          "type": 9
-        },
-        {
-          "id": "5:3804523211827769853",
-          "name": "dueDate",
-          "type": 9
-        },
-        {
-          "id": "6:3989649022110392228",
-          "name": "responsible",
-          "type": 9
-        },
-        {
-          "id": "7:6619822177524408521",
-          "name": "todoStatus",
-          "type": 9
-        },
-        {
-          "id": "8:2329977911475069548",
-          "name": "intDueDate",
-          "type": 6
-        },
-        {
-          "id": "9:7252690334617411166",
-          "name": "agendaModelId",
-          "type": 11,
-          "flags": 520,
-          "indexId": "5:4480038054985413531",
-          "relationTarget": "AgendaModel"
-        }
-      ],
-      "relations": []
     }
   ],
   "lastEntityId": "8:8273066848230542782",
@@ -347,10 +216,36 @@
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
-  "retiredEntityUids": [],
+  "retiredEntityUids": [
+    3208025670212046732,
+    4080201189132424713,
+    8273066848230542782
+  ],
   "retiredIndexUids": [],
   "retiredPropertyUids": [
-    2877214907635502003
+    2877214907635502003,
+    8680834265877062191,
+    5480477271106693442,
+    2806569546393840775,
+    6072458947920086728,
+    8120484623728209518,
+    3235445822835620930,
+    3980403979140751640,
+    7664830052598246407,
+    8118950058492031650,
+    2522374428913882980,
+    9218305278267500476,
+    6574570372885343081,
+    8190208450730409,
+    5406436219138372423,
+    6954505269142059034,
+    5568951169598398744,
+    3804523211827769853,
+    3989649022110392228,
+    6619822177524408521,
+    2329977911475069548,
+    7252690334617411166,
+    7600582381102329690
   ],
   "retiredRelationUids": [],
   "version": 1

@@ -19,8 +19,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
     var ctx = context;
     if (projectController.projects.isEmpty) {
       WidgetsBinding.instance!.addPostFrameCallback((_) {
-        Get.defaultDialog(
-            content: const Text('프로젝트를 프로젝트가 없습니다. 프로젝트를 등록하세요'), title: '알림');
+        Get.defaultDialog(content: const Text('프로젝트를 프로젝트가 없습니다. 프로젝트를 등록하세요'), title: '알림');
         Get.to(ResourceManagementPage(
           first: true,
         ));
@@ -51,7 +50,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
       child: Column(
         children: [
           SizedBox(height: defaultDividerSize),
-          projectTeamWidget(),
+          projectNameWidget(),
           SizedBox(height: defaultDividerSize * 0.3),
           meetingTitleWidget(),
           SizedBox(height: defaultDividerSize),
@@ -70,12 +69,12 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
     );
   }
 
-  Widget projectTeamWidget() {
+  Widget projectNameWidget() {
     return PopupMenuButton(
       padding: const EdgeInsets.only(top: 5.0),
       child: AbsorbPointer(
         child: TextFormField(
-          controller: controller.projectTeamCtrl,
+          controller: controller.projectNameCtrl,
           textAlign: TextAlign.center,
           decoration: textFormFieldInputStyle(
             '프로젝트',
@@ -86,9 +85,12 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
             ),
           ),
           style: const TextStyle(color: Color(0xff5D4037)),
-          onSaved: (value) {},
-          // todo Controller 에서 Save 함수로 관리하자.
-          validator: (value) {}, // todo Validator 구현 할 것.
+          validator: (value) {
+            if (value!.isEmpty) {
+              return "프로젝트를 선택해 주세요";
+            }
+            return null;
+          },
         ),
       ),
       offset: const Offset(80, 40),
@@ -115,9 +117,12 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
         textAlign: TextAlign.center,
         decoration: textFormFieldInputStyle('회의 제목', null),
         style: const TextStyle(color: Color(0xff5D4037)),
-        onSaved: (value) {},
-        // todo Controller 에서 Save 함수로 관리하자.
-        validator: (value) {}, // todo Validator 구현 할 것.
+        validator: (value) {
+          if (value!.isEmpty) {
+            return "회의 제목을 입력해 주세요";
+          }
+          return null;
+        },
       ),
     );
   }
@@ -142,6 +147,12 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
                 size: 30,
               )),
           style: const TextStyle(color: Color(0xff5D4037)),
+          validator: (value) {
+            if (value!.isEmpty) {
+              return "회의 시간을 선택해 주세요";
+            }
+            return null;
+          },
         ),
       ),
     );
@@ -155,27 +166,27 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
         '회의 장소',
         customPopupMenuButton(
           controller.meetingPlaceCtrl,
-          controller.projectHasBeenSelected.value
-              ? projectController
-                  .projects[controller.selectedProject.value].meetingPlace
-              : [],
+          controller.projectHasBeenSelected.value ? projectController.projects[controller.selectedProject.value].meetingPlace : [],
         ),
       ),
       style: const TextStyle(color: Color(0xff5D4037)),
-      onSaved: (value) {},
-      // todo Controller 에서 Save 함수로 관리하자.
-      validator: (value) {}, // todo Validator 구현 할 것.
+      validator: (value) {
+        if (value!.isEmpty) {
+          return "회의 장소를 선택해 주세요";
+        }
+        return null;
+      },
     );
   }
 
   Widget meetingAttendantWidget(BuildContext ctx) {
     controller.peopleList.clear();
     if (controller.projectHasBeenSelected.value) {
-      for (var people in projectController
-          .projects[controller.selectedProject.value].peoples) {
+      for (var people in projectController.projects[controller.selectedProject.value].peoples) {
         controller.peopleList.add(people.name);
       }
     }
+    controller.updateIsSelectedValueEmpty();
     return Column(
       children: [
         Row(
@@ -185,9 +196,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
               padding: const EdgeInsets.only(left: 10),
               child: Text(
                 '회의 참석자',
-                style: TextStyle(
-                    color: const Color(0xff5D4037).withOpacity(0.5),
-                    fontSize: 18),
+                style: TextStyle(color: const Color(0xff5D4037).withOpacity(0.5), fontSize: 18),
               ),
             ),
             GestureDetector(
@@ -206,7 +215,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
           decoration: BoxDecoration(
             border: Border.all(
               width: 1.0,
-              color: const Color(0xff5D4037),
+              color: controller.isSelectedValuesEmpty.value && controller.isValidation.value ? Colors.red : const Color(0xff5D4037),
             ),
             borderRadius: const BorderRadius.all(Radius.circular(10)),
           ),
@@ -216,26 +225,29 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                    child: Wrap(
-                        spacing: 10.0,
-                        children: controller.selectedValues.map((v) {
-                          return Chip(
-                            label: Text(controller.peopleList[v]),
-                            labelStyle:
-                                const TextStyle(color: Color(0xffFFFFFF)),
-                            backgroundColor:
-                                const Color(0xff795548).withOpacity(0.8),
-                            elevation: 6,
-                            onDeleted: () {
-                              controller.selectedValues.remove(v); // 이거 obs
-                              controller.attendantUpdate();
-                            },
-                          );
-                        }).toList())),
+                    child: controller.isSelectedValuesEmpty.value && controller.isValidation.value
+                        ? const Center(
+                            child: Text('회의 참석자를 입력해 주세요', style: TextStyle(
+                              fontSize: 12, color: Colors.red
+                            ),),
+                          )
+                        : Wrap(
+                            spacing: 10.0,
+                            children: controller.selectedValues.map((v) {
+                              return Chip(
+                                label: Text(controller.peopleList[v]),
+                                labelStyle: const TextStyle(color: Color(0xffFFFFFF)),
+                                backgroundColor: const Color(0xff795548).withOpacity(0.8),
+                                elevation: 6,
+                                onDeleted: () {
+                                  controller.selectedValues.remove(v); // 이거 obs
+                                },
+                              );
+                            }).toList())),
               ],
             ),
           ),
-        ),
+        ), // todo Wrap 부분을 폼으로 감싸기
       ],
     );
   }
@@ -244,8 +256,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
     List<String> peopleList = [];
 
     if (controller.projectHasBeenSelected.value) {
-      for (var people in projectController
-          .projects[controller.selectedProject.value].peoples) {
+      for (var people in projectController.projects[controller.selectedProject.value].peoples) {
         peopleList.add(people.name);
       }
     }
@@ -264,9 +275,12 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
             ),
           ),
           style: const TextStyle(color: Color(0xff5D4037)),
-          onSaved: (value) {},
-          // todo Controller 에서 Save 함수로 관리하자.
-          validator: (value) {}, // todo Validator 구현 할 것.
+          validator: (value) {
+            if (value!.isEmpty) {
+              return "회의 주관자를 선택해 주세요";
+            }
+            return null;
+          },
         ),
       ),
       offset: const Offset(80, 40),
@@ -293,8 +307,7 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
   Widget meetingsWidget() {
     List<String> meetingsList = [];
     if (controller.projectHasBeenSelected.value) {
-      for (var meeting in projectController
-          .projects[controller.selectedProject.value].meetings) {
+      for (var meeting in projectController.projects[controller.selectedProject.value].meetings) {
         meetingsList.add(meeting.meetingName);
       }
     }
@@ -306,9 +319,12 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
         customPopupMenuButton(controller.meetingsCtrl, meetingsList),
       ),
       style: const TextStyle(color: Color(0xff5D4037)),
-      onSaved: (value) {},
-      // todo Controller 에서 Save 함수로 관리하자.
-      validator: (value) {}, // todo Validator 구현 할 것.
+      validator: (value) {
+        if (value!.isEmpty) {
+          return "회의 종류를 선택해 주세요";
+        }
+        return null;
+      },
     );
   }
 
@@ -316,13 +332,12 @@ class MeetingMinutePage extends GetView<MeetingMinuteController> {
     controller.meetingPlaceCtrl.clear();
     controller.meetingModeratorCtrl.clear();
     controller.meetingTitleCtrl.clear();
-    controller.projectTeamCtrl.clear();
+    controller.projectNameCtrl.clear();
     controller.meetingsCtrl.clear();
     controller.meetingDateCtrl.clear();
     controller.selectedValues.clear();
     controller.meetingAgendasModel.clear();
-    WidgetsBinding.instance!
-        .addPostFrameCallback((_) => projectController.hasBeenUpdated = false);
+    WidgetsBinding.instance!.addPostFrameCallback((_) => projectController.hasBeenUpdated = false);
     if (projectController.projects.isEmpty) {
       controller.selectedProject.value = -1;
     } else {

@@ -96,6 +96,7 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
 }
 
 void showMultiSelect(BuildContext ctx) async {
+
   var controller = Get.put<MeetingMinuteController>(MeetingMinuteController());
 
   var selectedItem = await showDialog(
@@ -111,8 +112,6 @@ void showMultiSelect(BuildContext ctx) async {
 
   if (selectedItem != null) {
     controller.editingSelectedValues(selectedItem);
-    print('selected Values are : ${controller.selectedValues}');
-    controller.attendantUpdate();
   }
 }
 

@@ -127,7 +127,6 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
 
   void _addingAgendaMethod(int index) {
     controller.agendaController.clear();
-    // String agendaId = controller.meetingMinute.meetingMinuteId + '-' + (controller.meetingAgendasModel.length + 1).toString();
     String agendaId = controller.meetingMinuteId + '-' + (controller.meetingAgendasModel.length + 1).toString();
 
     Get.bottomSheet(
@@ -151,7 +150,7 @@ class MeetingContentsPage extends GetView<MeetingMinuteController> {
               ])),
               BottomSheetAgendaStatusWidget(number: -1),
               Text('Agenda : ', style: bottomSheetSubTitleTextStyle()),
-              bottomSheetTextField(controller.agendaController, '아젠다 #${index + 1} 를 입력하세요', null, 1, 40),
+              bottomSheetTextField(controller.agendaController, '아젠다 #${index + 1} 를 입력하세요', null, 1, 40,),
               completeButton(
                 () {
                   if (controller.agendaController.text != '') {
