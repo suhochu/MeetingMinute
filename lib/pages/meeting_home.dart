@@ -78,12 +78,15 @@ class MeetingHomePage extends GetView<MeetingMinuteController> {
               if (isConfirmed) {
                 controller.isValidation.value = true;
                 controller.updateIsSelectedValueEmpty();
-                if (controller.formKey.currentState!.validate()) {
+                if(controller.tapSelection.value == 1){
+                  controller.saveToDB();
+                } else if (controller.formKey.currentState!.validate()) {
                   print('*****');
                   controller.saveToDB();
                 }
               }
-            })
+            }),
+        IconButton(onPressed: controller.makePDF, icon:Icon(Icons.email))
       ],
       elevation: 0,
       backgroundColor: Colors.transparent,

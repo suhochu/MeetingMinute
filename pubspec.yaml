@@ -43,6 +43,8 @@ dependencies:
   path_provider: ^2.0.5
   image_picker: ^0.8.4+4
   image_cropper: ^1.4.1
+  pdf: ^3.6.5
+  flutter_email_sender: ^5.0.2
 
 dev_dependencies:
   flutter_test:

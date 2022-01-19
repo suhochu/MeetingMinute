@@ -7,6 +7,12 @@ import 'package:meetingminutes52/objectbox.g.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'dart:io';
+
 class MeetingMinuteController extends GetxController {
   //Tab 관련 변수들
   RxInt tapSelection = 0.obs;
@@ -123,8 +129,7 @@ class MeetingMinuteController extends GetxController {
     List<ContentsModel> tempContents = meetingAgendasModel[number].contentsModels;
     List<TodoModel> tempTodos = meetingAgendasModel[number].todoModels;
 
-    meetingAgendasModel[number] =
-        meetingAgendasModel[number].copyWith(agendaString: agendaTitle, issuedTime: issuedTime, agendaStatus: agendaStatus);
+    meetingAgendasModel[number] = meetingAgendasModel[number].copyWith(agendaString: agendaTitle, issuedTime: issuedTime, agendaStatus: agendaStatus);
 
     meetingAgendasModel[number].contentsModels = tempContents;
     meetingAgendasModel[number].todoModels = tempTodos;
@@ -173,7 +178,7 @@ class MeetingMinuteController extends GetxController {
   void saveToDB() {
     updateMeetingMinute();
     int id = projectBox!.put(currentMeetingMinute);
-    Get.snackbar('알림', '저장 되었습니다.', backgroundColor: Colors.white12,);
+    Get.snackbar('알림', '저장 되었습니다.', backgroundColor: Colors.grey.withOpacity(0.25), duration: const Duration(seconds: 1));
   }
 
   //회의록을 저장할때 화면상의 내용을 currentMeetingMinute 로 업데이트 하는 기능
@@ -355,11 +360,61 @@ class MeetingMinuteController extends GetxController {
     }
   }
 
-  void updateIsSelectedValueEmpty(){
+  void updateIsSelectedValueEmpty() {
     if (selectedValues.isNotEmpty) {
       isSelectedValuesEmpty.value = false;
     } else {
       isSelectedValuesEmpty.value = true;
     }
+  }
+
+  void makePDF() async {
+    final pdf = pw.Document();
+
+    pdf.addPage(pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(32),
+        build: (pw.Context context) {
+          return <pw.Widget>[
+            pw.Header(level: 0, child: pw.Text('Easy Approach Document')),
+            pw.Paragraph(text: 'Hello World!'),
+            pw.Paragraph(text: 'Hello World! 4')
+          ];
+        }));
+
+    print(pdf);
+
+    Directory? appDirectory;
+
+    if (Platform.isIOS) {
+      appDirectory = await getApplicationDocumentsDirectory();
+    } else {
+      appDirectory = await getExternalStorageDirectory();
+    }
+
+    final output = await Directory('${appDirectory!.path}/pdf').create();
+    final file = File("${output.path}/example.pdf");
+    await file.writeAsBytes(await pdf.save());
+
+    print(file);
+
+    final Email email = Email(
+      body: 'Email body',
+      subject: 'Email subject',
+      recipients: ['chooshow@gmail.com'],
+      attachmentPaths: [file.path],
+      isHTML: false,
+    );
+
+    String platformResponse;
+
+    try {
+      await FlutterEmailSender.send(email);
+      platformResponse = 'success';
+    } catch (error) {
+      platformResponse = error.toString();
+    }
+
+    print(platformResponse);
   }
 }

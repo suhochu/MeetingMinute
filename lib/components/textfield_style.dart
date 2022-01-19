@@ -20,11 +20,11 @@ InputDecoration textFormFieldInputStyle(String hintText, Widget? widget) {
   );
 }
 
-Widget bottomSheetTextField(TextEditingController controller, String hintText, Widget? widget, int maxLine, int maxLength, ){
+Widget bottomSheetTextField(TextEditingController controller, String hintText, Widget? widget, int maxLine, int maxLength,
+    {FormFieldValidator<String>? validator}) {
   return Padding(
-    padding: const EdgeInsets.symmetric(
-        horizontal: 16.0, vertical: 15.0),
-    child: TextField(
+    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.0),
+    child: TextFormField(
       controller: controller,
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.start,
@@ -32,6 +32,7 @@ Widget bottomSheetTextField(TextEditingController controller, String hintText, W
       style: const TextStyle(color: Color(0xff5D4037)),
       maxLines: maxLine,
       maxLength: maxLength,
+      validator: validator ?? (val) {},
     ),
   );
 }

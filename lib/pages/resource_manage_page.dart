@@ -10,7 +10,6 @@ import 'package:meetingminutes52/pages/meeting_home.dart';
 import 'package:meetingminutes52/theme/text_style.dart';
 
 class ResourceManagementPage extends GetView<MeetingSourceController> {
-
   ResourceManagementPage({Key? key, required this.first}) : super(key: key);
   bool first;
 
@@ -88,11 +87,7 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
                 if (controller.notYetSaved) {
                   await saveProject();
                 } else {
-                  Get.snackbar(
-                    '알림',
-                    '변경 사항이 없습니다.',
-                    backgroundColor: Colors.white, duration: const Duration(seconds: 1)
-                  );
+                  Get.snackbar('알림', '변경 사항이 없습니다.', backgroundColor: Colors.white, duration: const Duration(seconds: 1));
                 }
               }),
           const SizedBox(
@@ -142,13 +137,13 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(project.teamName,
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic)),
+                          Text(project.teamName, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic)),
                           const SizedBox(height: 6),
                           Text(project.projectName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
                         ],
                       )),
-                  onTap: () => _editingProjectMethod(number), // Editing Contents
+                  onTap: () => _editingProjectMethod(number),
+                  // Editing Contents
                   onLongPress: () async {
                     bool? deleteParameter = await _removeProjectMethod(number);
                     if (deleteParameter!) {
@@ -204,32 +199,79 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
 
     Get.bottomSheet(
       SingleChildScrollView(
-          child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Text('프로젝트 추가', textAlign: TextAlign.center, style: bottomSheetTitleTextStyle()),
-                  const SizedBox(height: 20),
-                  Text('프로젝트 이름 : ', style: bottomSheetSubTitleTextStyle()),
-                  bottomSheetTextField(_projectNameController, '신규 프로젝트 이름을 입력하세요', null, 1, 30),
-                  const SizedBox(height: 20),
-                  Text('팀 이름 : ', style: bottomSheetSubTitleTextStyle()),
-                  bottomSheetTextField(_teamNameController, '프로젝트 담당 팀의 입력하세요', null, 1, 30),
-                  completeButton(() {
-                    if (_projectNameController.text != '' && _projectNameController.text != '') {
-                      ProjectModel newProject = ProjectModel(
-                        projectName: _projectNameController.text,
-                        teamName: _teamNameController.text,
-                      );
-                      controller.addingProject(newProject);
-                      _projectNameController.clear();
-                      _teamNameController.clear();
-                    }
-                    Get.back();
-                  }),
-                  const SizedBox(height: 20)
-                ],
-              ))),
+          child: Form(
+              key: formKey,
+              child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Text('프로젝트 추가', textAlign: TextAlign.center, style: bottomSheetTitleTextStyle()),
+                      const SizedBox(height: 20),
+                      Text('프로젝트 이름 : ', style: bottomSheetSubTitleTextStyle()),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.0),
+                        child: TextFormField(
+                          controller: _projectNameController,
+                          textDirection: TextDirection.ltr,
+                          textAlign: TextAlign.start,
+                          decoration: textFormFieldInputStyle('신규 프로젝트 이름을 입력하세요', null),
+                          style: const TextStyle(color: Color(0xff5D4037)),
+                          maxLines: 1,
+                          maxLength: 30,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "프로젝트 이름을 입력해 주세요";
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text('팀 이름 : ', style: bottomSheetSubTitleTextStyle()),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.0),
+                        child: TextFormField(
+                          controller: _teamNameController,
+                          textDirection: TextDirection.ltr,
+                          textAlign: TextAlign.start,
+                          decoration: textFormFieldInputStyle('프로젝트 담당 팀의 입력하세요', null),
+                          style: const TextStyle(color: Color(0xff5D4037)),
+                          maxLines: 1,
+                          maxLength: 30,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return '프로젝트 담당 팀을 입력해 주세요';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          completeButton(() {
+                            if (formKey.currentState!.validate()) {
+                              ProjectModel newProject = ProjectModel(
+                                projectName: _projectNameController.text,
+                                teamName: _teamNameController.text,
+                              );
+                              controller.addingProject(newProject);
+                              _projectNameController.clear();
+                              _teamNameController.clear();
+                              Get.back();
+                            }
+                          }, content: '완료'),
+                          const SizedBox(width: 20),
+                          completeButton(() {
+                            Get.back();
+                          }, color: Colors.blueAccent, content: '취소'),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
+                  )))),
       isDismissible: true,
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
@@ -249,46 +291,92 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
 
     Get.bottomSheet(
       SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Text('프로젝트 정보 수정', textAlign: TextAlign.center, style: bottomSheetTitleTextStyle()),
-              const SizedBox(height: 20),
-              Text('프로젝트 이름 : ', style: bottomSheetSubTitleTextStyle()),
-              bottomSheetTextField(_projectNameController, '프로젝트 이름을 변경하세요', null, 1, 30),
-              const SizedBox(height: 20),
-              Text('팀 이름 : ', style: bottomSheetSubTitleTextStyle()),
-              bottomSheetTextField(_teamNameController, '프로젝트 담당 팀을 변경하세요', null, 1, 30),
-              completeButton(() async {
-                if (_projectNameController.text != '' && _teamNameController.text != '') {
-                  if (_projectNameController.text != project.projectName || _teamNameController.text != project.teamName) {
-                    bool isConfirmed = false;
-                    await Get.defaultDialog(
-                      content: const Text('변경 사항을 수정 합니까?'),
-                      title: '알림',
-                      textConfirm: '수정',
-                      onConfirm: () {
-                        isConfirmed = true;
-                        Get.back();
-                      },
-                      textCancel: '취소',
-                      onCancel: () {
-                        isConfirmed = false;
-                      },
-                    );
-                    if (isConfirmed) {
-                      mmController.updateAllMeetingMinute(project.projectName, _projectNameController.text);
-                      controller.editingProject(number, _projectNameController.text, _teamNameController.text);
-                      _projectNameController.clear();
-                      _teamNameController.clear();
-                    }
-                  }
-                  Get.back();
-                }
-              }),
-              const SizedBox(height: 20)
-            ],
+        child: Form(
+          key: formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Text('프로젝트 정보 수정', textAlign: TextAlign.center, style: bottomSheetTitleTextStyle()),
+                const SizedBox(height: 20),
+                Text('프로젝트 이름 : ', style: bottomSheetSubTitleTextStyle()),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.0),
+                  child: TextFormField(
+                    controller: _projectNameController,
+                    textDirection: TextDirection.ltr,
+                    textAlign: TextAlign.start,
+                    decoration: textFormFieldInputStyle('프로젝트 이름을 변경하세요', null),
+                    style: const TextStyle(color: Color(0xff5D4037)),
+                    maxLines: 1,
+                    maxLength: 30,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "프로젝트 이름을 입력해 주세요";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text('팀 이름 : ', style: bottomSheetSubTitleTextStyle()),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.0),
+                  child: TextFormField(
+                    controller: _teamNameController,
+                    textDirection: TextDirection.ltr,
+                    textAlign: TextAlign.start,
+                    decoration: textFormFieldInputStyle('프로젝트 이름을 변경하세요', null),
+                    style: const TextStyle(color: Color(0xff5D4037)),
+                    maxLines: 1,
+                    maxLength: 30,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '프로젝트 담당 팀을 입력해 주세요';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    completeButton(() async {
+                      if (formKey.currentState!.validate()) {
+                        if (_projectNameController.text != project.projectName || _teamNameController.text != project.teamName) {
+                          bool isConfirmed = false;
+                          await Get.defaultDialog(
+                            content: const Text('변경 사항을 수정 합니까?'),
+                            title: '알림',
+                            textConfirm: '수정',
+                            onConfirm: () {
+                              isConfirmed = true;
+                              Get.back();
+                            },
+                            textCancel: '취소',
+                            onCancel: () {
+                              isConfirmed = false;
+                            },
+                          );
+                          if (isConfirmed) {
+                            mmController.updateAllMeetingMinute(project.projectName, _projectNameController.text);
+                            controller.editingProject(number, _projectNameController.text, _teamNameController.text);
+                            _projectNameController.clear();
+                            _teamNameController.clear();
+                            Get.back();
+                          }
+                        }
+                      }
+                    }, content: '수정'),
+                    const SizedBox(width: 20),
+                    completeButton(() {
+                      Get.back();
+                    }, color: Colors.blueAccent, content: '취소')
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),
@@ -397,53 +485,41 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
                     ),
                     const SizedBox(height: 30),
                     Text('이름 : ', style: bottomSheetSubTitleTextStyle()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.0),
-                      child: TextFormField(
-                        controller: _peopleNameController,
-                        textDirection: TextDirection.ltr,
-                        textAlign: TextAlign.start,
-                        decoration: textFormFieldInputStyle('프로젝트 맴버의 이름을 입력 하세요', null),
-                        style: const TextStyle(color: Color(0xff5D4037)),
-                        maxLines: 1,
-                        maxLength: 20,
-                        validator: (val) {
-                          if (val!.isEmpty) {
-                            return '이름은 필수사항입니다.';
-                          }
-
-                          if (val.length < 2) {
-                            return '이름은 두글자 이상 입력 해주셔야합니다.';
-                          }
-
-                          return null;
-                        },
-                      ),
+                    bottomSheetTextField(
+                      _peopleNameController,
+                      '프로젝트 맴버의 이름을 입력 하세요',
+                      null,
+                      1,
+                      20,
+                      validator: (val) {
+                        if (val!.isEmpty) {
+                          return '이름은 필수사항입니다.';
+                        }
+                        if (val.length < 2) {
+                          return '이름은 두글자 이상 입력 해주셔야합니다.';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 20),
                     Text('이메일 : ', style: bottomSheetSubTitleTextStyle()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.0),
-                      child: TextFormField(
-                        controller: _peopleEmailController,
-                        textDirection: TextDirection.ltr,
-                        textAlign: TextAlign.start,
-                        decoration: textFormFieldInputStyle('프로젝트 맴버의 이메일을 입력 하세요', null),
-                        style: const TextStyle(color: Color(0xff5D4037)),
-                        maxLines: 1,
-                        maxLength: 40,
-                        validator: (val) {
-                          if (val!.isEmpty) {
-                            return '이메일은 필수사항입니다.';
-                          }
-                          if (!RegExp(
-                                  r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
-                              .hasMatch(val)) {
-                            return '잘못된 이메일 형식입니다.';
-                          }
-                          return null;
-                        },
-                      ),
+                    bottomSheetTextField(
+                      _peopleEmailController,
+                      '프로젝트 맴버의 이메일을 입력 하세요',
+                      null,
+                      1,
+                      40,
+                      validator: (val) {
+                        if (val!.isEmpty) {
+                          return '이메일은 필수사항입니다.';
+                        }
+                        if (!RegExp(
+                                r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                            .hasMatch(val)) {
+                          return '잘못된 이메일 형식입니다.';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 20),
                     Row(
@@ -493,36 +569,82 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
 
     Get.bottomSheet(
       SingleChildScrollView(
-          child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const SizedBox(height: 20),
-                Container(
-                  alignment: Alignment.center,
-                  child: Text('회의 참석자 변경', style: bottomSheetTitleTextStyle()),
-                ),
-                const SizedBox(height: 30),
-                Text('이름 : ', style: bottomSheetSubTitleTextStyle()),
-                bottomSheetTextField(_peopleNameController, '프로젝트 맴버의 이름을 변경 하세요', null, 1, 20),
-                const SizedBox(height: 20),
-                Text('이메일 : ', style: bottomSheetSubTitleTextStyle()),
-                bottomSheetTextField(_peopleEmailController, '프로젝트 맴버의 이메일을 변경 하세요', null, 1, 40),
-                const SizedBox(height: 20),
-                completeButton(() {
-                  if (_peopleNameController.text != '') {
-                    People newPeople = People(
-                      name: _peopleNameController.text,
-                      email: _peopleEmailController.text,
-                      team: project.projectName,
-                    );
-                    controller.editingPeople(number, index, newPeople);
-                    _peopleNameController.clear();
-                    _peopleEmailController.clear();
+          child: Form(
+        key: formKey,
+        child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const SizedBox(height: 20),
+              Container(
+                alignment: Alignment.center,
+                child: Text('회의 참석자 변경', style: bottomSheetTitleTextStyle()),
+              ),
+              const SizedBox(height: 30),
+              Text('이름 : ', style: bottomSheetSubTitleTextStyle()),
+              bottomSheetTextField(
+                _peopleNameController,
+                '프로젝트 맴버의 이름을 변경 하세요',
+                null,
+                1,
+                40,
+                validator: (val) {
+                  if (val!.isEmpty) {
+                    return '이름은 필수사항입니다.';
                   }
-                  Get.back();
-                }),
-                const SizedBox(height: 20),
-              ]))),
+
+                  if (val.length < 2) {
+                    return '이름은 두글자 이상 입력 해주셔야합니다.';
+                  }
+
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              Text('이메일 : ', style: bottomSheetSubTitleTextStyle()),
+              bottomSheetTextField(
+                _peopleEmailController,
+                '프로젝트 맴버의 이메일을 변경 하세요',
+                null,
+                1,
+                40,
+                validator: (val) {
+                  if (val!.isEmpty) {
+                    return '이메일은 필수사항입니다.';
+                  }
+                  if (!RegExp(
+                          r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                      .hasMatch(val)) {
+                    return '잘못된 이메일 형식입니다.';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  completeButton(() {
+                    if (formKey.currentState!.validate()) {
+                      People newPeople = People(
+                        name: _peopleNameController.text,
+                        email: _peopleEmailController.text,
+                        team: project.projectName,
+                      );
+                      controller.editingPeople(number, index, newPeople);
+                      _peopleNameController.clear();
+                      _peopleEmailController.clear();
+                      Get.back();
+                    }
+                  }, content: '수정'),
+                  const SizedBox(width: 20),
+                  completeButton(() {
+                    Get.back();
+                  }, color: Colors.blueAccent, content: '취소'),
+                ],
+              ),
+              const SizedBox(height: 20),
+            ])),
+      )),
       isDismissible: true,
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
@@ -625,25 +747,19 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
                   ),
                   const SizedBox(height: 30),
                   Text('회의실 이름 : ', style: bottomSheetSubTitleTextStyle()),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.0),
-                    child: TextFormField(
-                      controller: _meetingPlaceController,
-                      textDirection: TextDirection.ltr,
-                      textAlign: TextAlign.start,
-                      decoration: textFormFieldInputStyle('회의실의 이름을 입력 하세요', null),
-                      style: const TextStyle(color: Color(0xff5D4037)),
-                      maxLines: 1,
-                      maxLength: 20,
-                      validator: (val) {
-                        if (val!.isEmpty) {
-                          return '회의실 이름을 입력해 주세요';
-                        }
-                        return null;
-                      },
-                    ),
+                  bottomSheetTextField(
+                    _meetingPlaceController,
+                    '회의실의 이름을 입력 하세요',
+                    null,
+                    1,
+                    20,
+                    validator: (val) {
+                      if (val!.isEmpty) {
+                        return '회의실 이름을 입력해 주세요';
+                      }
+                      return null;
+                    },
                   ),
-                  // bottomSheetTextField(_meetingPlaceController, '회의실의 이름을 입력 하세요', null, 1, 20),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -654,8 +770,10 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
                           _meetingPlaceController.clear();
                           Get.snackbar('알림', '회의실을 추가하였습니다.', backgroundColor: Colors.white, duration: const Duration(milliseconds: 1000));
                         }
-                      }, content: '저장'),
-                      const SizedBox(width: 20,),
+                      }, content: '추가'),
+                      const SizedBox(
+                        width: 20,
+                      ),
                       completeButton(
                         () {
                           Get.back();
@@ -686,27 +804,53 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
 
     Get.bottomSheet(
       SingleChildScrollView(
-          child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const SizedBox(height: 20),
-                Container(
-                  alignment: Alignment.center,
-                  child: Text('회의실 변경', style: bottomSheetTitleTextStyle()),
-                ),
-                const SizedBox(height: 30),
-                Text('회의실 이름 : ', style: bottomSheetSubTitleTextStyle()),
-                bottomSheetTextField(_meetingPlaceController, '프로젝트 맴버의 이름을 변경 하세요', null, 1, 20),
-                const SizedBox(height: 20),
-                completeButton(() {
-                  if (_meetingPlaceController.text != '') {
-                    controller.editingMeetingPlace(number, index, _meetingPlaceController.text);
-                    _meetingPlaceController.clear();
+          child: Form(
+        key: formKey,
+        child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const SizedBox(height: 20),
+              Container(
+                alignment: Alignment.center,
+                child: Text('회의실 변경', style: bottomSheetTitleTextStyle()),
+              ),
+              const SizedBox(height: 30),
+              Text('회의실 이름 : ', style: bottomSheetSubTitleTextStyle()),
+              bottomSheetTextField(
+                _meetingPlaceController,
+                '회의실의 이름을 입력 하세요',
+                null,
+                1,
+                20,
+                validator: (val) {
+                  if (val!.isEmpty) {
+                    return '회의실 이름을 입력해 주세요';
                   }
-                  Get.back();
-                }),
-                const SizedBox(height: 20),
-              ]))),
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  completeButton(() {
+                    if (formKey.currentState!.validate()) {
+                      controller.editingMeetingPlace(number, index, _meetingPlaceController.text);
+                      _meetingPlaceController.clear();
+                      Get.back();
+                    }
+                  }, content: '수정'),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  completeButton(() {
+                    Get.back();
+                  }, color: Colors.blueAccent, content: '취소'),
+                ],
+              ),
+              const SizedBox(height: 20),
+            ])),
+      )),
       isDismissible: true,
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
@@ -820,25 +964,19 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
                   ),
                   const SizedBox(height: 30),
                   Text('회의 이름 : ', style: bottomSheetSubTitleTextStyle()),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.0),
-                    child: TextFormField(
-                      controller: _meetingsController,
-                      textDirection: TextDirection.ltr,
-                      textAlign: TextAlign.start,
-                      decoration: textFormFieldInputStyle('회의의 이름을 입력 하세요', null),
-                      style: const TextStyle(color: Color(0xff5D4037)),
-                      maxLines: 1,
-                      maxLength: 20,
-                      validator: (val) {
-                        if (val!.isEmpty) {
-                          return "회의의 이름을 입력해 주세요";
-                        }
-                        return null;
-                      },
-                    ),
+                  bottomSheetTextField(
+                    _meetingsController,
+                    '회의의 이름을 입력 하세요',
+                    null,
+                    1,
+                    20,
+                    validator: (val) {
+                      if (val!.isEmpty) {
+                        return "회의의 이름을 입력해 주세요";
+                      }
+                      return null;
+                    },
                   ),
-                  // bottomSheetTextField(_meetingsController, '회의의 이름을 입력 하세요', null, 1, 20),
                   const SizedBox(height: 20),
                   bottomSheetTextField(_meetingsTimingsController, '회의의 주기를 입력 하세요', null, 1, 20),
                   const SizedBox(height: 20),
@@ -846,7 +984,7 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       completeButton(
-                            () {
+                        () {
                           if (formKey.currentState!.validate()) {
                             Meetings newMeetings = Meetings(
                               meetingName: _meetingsController.text,
@@ -858,12 +996,17 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
                             Get.snackbar('알림', '회의목록을 추가하였습니다.', backgroundColor: Colors.white, duration: const Duration(milliseconds: 1000));
                           }
                         },
-                        content: '저장',
+                        content: '추가',
                       ),
-                      const SizedBox(width: 20,),
-                      completeButton((){
-                        Get.back();
-                      }, color: Colors.blueAccent,)
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      completeButton(
+                        () {
+                          Get.back();
+                        },
+                        color: Colors.blueAccent,
+                      )
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -888,35 +1031,58 @@ class ResourceManagementPage extends GetView<MeetingSourceController> {
 
     Get.bottomSheet(
       SingleChildScrollView(
-          child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const SizedBox(height: 20),
-                Container(
-                  alignment: Alignment.center,
-                  child: Text('회의 추가', style: bottomSheetTitleTextStyle()),
-                ),
-                const SizedBox(height: 30),
-                Text('회의 이름 : ', style: bottomSheetSubTitleTextStyle()),
-                bottomSheetTextField(_meetingsController, '회의의 이름을 입력 하세요', null, 1, 20),
-                const SizedBox(height: 20),
-                bottomSheetTextField(_meetingsTimingsController, '회의의 주기를 입력 하세요', null, 1, 20),
-                const SizedBox(height: 20),
-                completeButton(() {
-                  if (_meetingsController.text != '') {
-                    Meetings newMeetings = Meetings(
-                      meetingName: _meetingsController.text,
-                      meetingTiming: _meetingsTimingsController.text,
-                    );
-
-                    controller.editingMeetings(number, index, newMeetings);
-                    _meetingsController.clear();
-                    _meetingsTimingsController.clear();
+          child: Form(
+        key: formKey,
+        child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const SizedBox(height: 20),
+              Container(
+                alignment: Alignment.center,
+                child: Text('회의 추가', style: bottomSheetTitleTextStyle()),
+              ),
+              const SizedBox(height: 30),
+              Text('회의 이름 : ', style: bottomSheetSubTitleTextStyle()),
+              bottomSheetTextField(
+                _meetingsController,
+                '회의의 이름을 입력 하세요',
+                null,
+                1,
+                20,
+                validator: (val) {
+                  if (val!.isEmpty) {
+                    return "회의의 이름을 입력해 주세요";
                   }
-                  Get.back();
-                }),
-                const SizedBox(height: 20),
-              ]))),
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              bottomSheetTextField(_meetingsTimingsController, '회의의 주기를 입력 하세요', null, 1, 20),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  completeButton(() {
+                    if (formKey.currentState!.validate()) {
+                      Meetings newMeetings = Meetings(
+                        meetingName: _meetingsController.text,
+                        meetingTiming: _meetingsTimingsController.text,
+                      );
+                      controller.editingMeetings(number, index, newMeetings);
+                      _meetingsController.clear();
+                      _meetingsTimingsController.clear();
+                      Get.back();
+                    }
+                  }, content: '수정'),
+                  const SizedBox(width: 20),
+                  completeButton(() {
+                    Get.back();
+                  }, color: Colors.blueAccent, content: '취소')
+                ],
+              ),
+              const SizedBox(height: 20),
+            ])),
+      )),
       isDismissible: true,
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
